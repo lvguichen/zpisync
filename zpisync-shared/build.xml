@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="zpisync-shared" >
+
+    <property name="libs" location="libs" />
+
+    <target name="libs" >
+        <mkdir dir="${libs}" />
+
+        <get dest="${libs}" src="http://4thline.org/projects/download/cling-distribution-1.0.5.zip" />
+        <unzip dest="${libs}" src="${libs}/cling-distribution-1.0.5.zip" />
+    </target>
+
+</project>
