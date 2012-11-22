@@ -81,7 +81,7 @@ public class MainActivity extends TabActivity {
 
         intent = new Intent().setClass(this, BrowseActivity.class);
         spec = tabHost.newTabSpec("browse")
-                .setIndicator("Przeszukaj sie�", getResources().getDrawable(R.drawable.ic_tab_browse))
+                .setIndicator(getResources().getText(R.string.search_lan), getResources().getDrawable(R.drawable.ic_tab_browse))
                 .setContent(intent);
         tabHost.addTab(spec);
 
