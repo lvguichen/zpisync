@@ -8,9 +8,21 @@
     <target name="libs.fetch">
         <mkdir dir="${libs}" />
 
-        <get dest="${libs}" src="http://4thline.org/projects/download/cling-distribution-1.0.5.zip" />
-        <unzip dest="${libs}" src="${libs}/cling-distribution-1.0.5.zip" />
+        <get-zip base="http://4thline.org/projects/download/" file="cling-distribution-1.0.5" />
+        <get-zip base="http://www.restlet.org/downloads/2.0/" file="restlet-jse-2.0.15" />
+        <get-zip base="http://www.restlet.org/downloads/2.0/" file="restlet-android-2.0.15" />
     </target>
+    
+    <macrodef name="get-zip">
+        <attribute name="file" />
+        <attribute name="base" />
+        <sequential>
+            <get dest="${libs}" src="@{base}@{file}.zip" usetimestamp="true" />
+            <!-- eclipse keeps it open -->
+            <delete dir="${libs}/@{file}" failonerror="false" />
+            <unzip dest="${libs}" src="${libs}/@{file}.zip" />
+        </sequential>
+    </macrodef>
     
     <target name="libs.check">
         <condition property="libs.exists">
