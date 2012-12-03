@@ -3,11 +3,19 @@
 
     <property name="libs" location="libs" />
 
-    <target name="libs" >
+    <target name="libs" depends="libs.check" unless="libs.exists" />
+    
+    <target name="libs.fetch">
         <mkdir dir="${libs}" />
 
         <get dest="${libs}" src="http://4thline.org/projects/download/cling-distribution-1.0.5.zip" />
         <unzip dest="${libs}" src="${libs}/cling-distribution-1.0.5.zip" />
+    </target>
+    
+    <target name="libs.check">
+        <condition property="libs.exists">
+        	<available file="${libs}" type="dir" />
+        </condition>
     </target>
 
 </project>
