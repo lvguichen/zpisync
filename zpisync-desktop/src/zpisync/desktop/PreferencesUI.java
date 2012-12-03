@@ -1,0 +1,207 @@
+package zpisync.desktop;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
+
+import java.awt.BorderLayout;
+import javax.swing.JTabbedPane;
+import javax.swing.JButton;
+import java.awt.event.KeyEvent;
+import java.awt.FlowLayout;
+import java.awt.Dimension;
+import javax.swing.border.EmptyBorder;
+import java.awt.SystemColor;
+import java.awt.Point;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.BevelBorder;
+import javax.swing.SwingConstants;
+import java.awt.Component;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JScrollPane;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import javax.swing.border.LineBorder;
+
+public class PreferencesUI {
+
+	private JFrame frmZpisync;
+	private JTable table;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					try {
+						UIManager.setLookAndFeel(UIManager
+								.getSystemLookAndFeelClassName());
+					} catch (Exception e1) {
+					}
+					PreferencesUI window = new PreferencesUI();
+					window.frmZpisync.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public PreferencesUI() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frmZpisync = new JFrame();
+		frmZpisync.setLocationRelativeTo(null);
+		frmZpisync.setTitle("ZpiSync Preferences");
+		frmZpisync.setSize(415, 463);
+		frmZpisync.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		JPanel panel = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
+		flowLayout.setAlignOnBaseline(true);
+		flowLayout.setAlignment(FlowLayout.RIGHT);
+		frmZpisync.getContentPane().add(panel, BorderLayout.SOUTH);
+
+		JButton btnNewButton_1 = new JButton("OK");
+		btnNewButton_1.setPreferredSize(new Dimension(75, 24));
+		btnNewButton_1.setSize(new Dimension(200, 200));
+		panel.add(btnNewButton_1);
+
+		JButton btnNewButton = new JButton("Cancel");
+		btnNewButton.setPreferredSize(new Dimension(75, 24));
+		panel.add(btnNewButton);
+
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBorder(new EmptyBorder(4, 4, 0, 4));
+		frmZpisync.getContentPane().add(tabbedPane, BorderLayout.CENTER);
+		
+		JPanel panel_3 = new JPanel();
+		panel_3.setBackground(SystemColor.window);
+		tabbedPane.addTab("Settings", null, panel_3, null);
+		
+		JLabel lblSecurityPin = new JLabel("Security PIN:");
+		
+		JButton btnGenerateNewPin = new JButton("Generate new PIN");
+		
+		JLabel lblPin = new JLabel("81X301Z");
+		lblPin.setHorizontalAlignment(SwingConstants.CENTER);
+		lblPin.setBorder(new LineBorder(SystemColor.controlHighlight));
+		lblPin.setFont(new Font("Tahoma", Font.PLAIN, 32));
+		lblPin.setOpaque(true);
+		lblPin.setBackground(new Color(255, 250, 205));
+		GroupLayout gl_panel_3 = new GroupLayout(panel_3);
+		gl_panel_3.setHorizontalGroup(
+			gl_panel_3.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_panel_3.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel_3.createSequentialGroup()
+							.addComponent(lblSecurityPin)
+							.addGap(10)
+							.addComponent(lblPin, GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
+							.addGap(10))
+						.addGroup(Alignment.TRAILING, gl_panel_3.createSequentialGroup()
+							.addComponent(btnGenerateNewPin)
+							.addContainerGap())))
+		);
+		gl_panel_3.setVerticalGroup(
+			gl_panel_3.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_3.createSequentialGroup()
+					.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel_3.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(lblPin))
+						.addGroup(gl_panel_3.createSequentialGroup()
+							.addGap(24)
+							.addComponent(lblSecurityPin)))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnGenerateNewPin)
+					.addContainerGap(278, Short.MAX_VALUE))
+		);
+		panel_3.setLayout(gl_panel_3);
+
+		JPanel panel_1 = new JPanel();
+		panel_1.setBackground(SystemColor.window);
+		tabbedPane.addTab("Devices", null, panel_1, null);
+		
+		JLabel lblListOfKnown = new JLabel("List of known devices:");
+		
+		JButton btnNewButton_2 = new JButton("Information");
+		
+		JButton btnForget = new JButton("Forget");
+		
+		JScrollPane scrollPane = new JScrollPane();
+		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
+		gl_panel_1.setHorizontalGroup(
+			gl_panel_1.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_1.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
+							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
+							.addGroup(gl_panel_1.createSequentialGroup()
+								.addComponent(btnNewButton_2)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(btnForget)))
+						.addComponent(lblListOfKnown))
+					.addContainerGap())
+		);
+		gl_panel_1.setVerticalGroup(
+			gl_panel_1.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_1.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblListOfKnown)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnNewButton_2)
+						.addComponent(btnForget))
+					.addContainerGap())
+		);
+		gl_panel_1.linkSize(SwingConstants.VERTICAL, new Component[] {btnNewButton_2, btnForget});
+		gl_panel_1.linkSize(SwingConstants.HORIZONTAL, new Component[] {btnNewButton_2, btnForget});
+		
+		table = new JTable();
+		scrollPane.setViewportView(table);
+		table.setModel(new DefaultTableModel(
+			new Object[][] {
+				{"aa", null, "d"},
+				{null, null, null},
+			},
+			new String[] {
+				"UUID", "Hostname", "Last sync"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+				String.class, String.class, String.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		});
+		panel_1.setLayout(gl_panel_1);
+
+		JPanel panel_2 = new JPanel();
+		panel_2.setBackground(SystemColor.window);
+		tabbedPane.addTab("Files", null, panel_2, null);
+	}
+}
