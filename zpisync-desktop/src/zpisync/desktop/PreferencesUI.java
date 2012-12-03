@@ -1,35 +1,29 @@
 package zpisync.desktop;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
-
 import java.awt.BorderLayout;
-import javax.swing.JTabbedPane;
-import javax.swing.JButton;
-import java.awt.event.KeyEvent;
-import java.awt.FlowLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
-import javax.swing.border.EmptyBorder;
+import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.SystemColor;
-import java.awt.Point;
+
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.border.BevelBorder;
 import javax.swing.SwingConstants;
-import java.awt.Component;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.JScrollPane;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
 
 public class PreferencesUI {
 
@@ -67,6 +61,7 @@ public class PreferencesUI {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings({ "rawtypes", "serial", "unchecked" })
 	private void initialize() {
 		frmZpisync = new JFrame();
 		frmZpisync.setLocationRelativeTo(null);
