@@ -168,7 +168,7 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
                         new ModelDetails("AndroidLight", "A demo light with on/off switch.", "v1")
                 );
 
-        LocalService service =
+        LocalService<SwitchPower> service =
                 new AnnotationLocalServiceBinder().read(SwitchPower.class);
 
         service.setManager(

@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import org.teleal.cling.android.AndroidUpnpService;
+
 import zpisync.android.browser.R;
 import org.teleal.cling.model.meta.Device;
 import org.teleal.cling.model.meta.LocalDevice;
@@ -61,7 +62,7 @@ public class BrowseActivity extends ListActivity {
 
             // Refresh the list with all known devices
             listAdapter.clear();
-            for (Device device : upnpService.getRegistry().getDevices()) {
+            for (Device<?, ?, ?> device : upnpService.getRegistry().getDevices()) {
                 registryListener.deviceAdded(device);
             }
 
@@ -81,7 +82,7 @@ public class BrowseActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        listAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
+        listAdapter = new ArrayAdapter<DeviceDisplay>(this, android.R.layout.simple_list_item_1);
         setListAdapter(listAdapter);
 
         getApplicationContext().bindService(
@@ -187,7 +188,7 @@ public class BrowseActivity extends ListActivity {
             deviceRemoved(device);
         }
 
-        public void deviceAdded(final Device device) {
+        public void deviceAdded(final Device<?, ?, ?> device) {
             runOnUiThread(new Runnable() {
                 public void run() {
                     DeviceDisplay d = new DeviceDisplay(device);
@@ -208,7 +209,7 @@ public class BrowseActivity extends ListActivity {
             });
         }
 
-        public void deviceRemoved(final Device device) {
+        public void deviceRemoved(final Device<?, ?, ?> device) {
             runOnUiThread(new Runnable() {
                 public void run() {
                     listAdapter.remove(new DeviceDisplay(device));
@@ -231,13 +232,13 @@ public class BrowseActivity extends ListActivity {
 
     protected class DeviceDisplay {
 
-        Device device;
+        Device<?, ?, ?> device;
 
-        public DeviceDisplay(Device device) {
+        public DeviceDisplay(Device<?, ?, ?> device) {
             this.device = device;
         }
 
-        public Device getDevice() {
+        public Device<?, ?, ?> getDevice() {
             return device;
         }
 
