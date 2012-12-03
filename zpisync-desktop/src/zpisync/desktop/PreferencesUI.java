@@ -8,6 +8,7 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.SystemColor;
+import java.util.logging.Logger;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -20,15 +21,16 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
-import java.awt.Toolkit;
 
-public class PreferencesUI {
+@SuppressWarnings("serial")
+public class PreferencesUI extends JFrame {
 
-	private JFrame frmZpisync;
+	private static final Logger log = Logger.getLogger(PreferencesUI.class.getName());
+
+	private AppController app;
 	private JTable table;
 
 	/**
@@ -38,13 +40,10 @@ public class PreferencesUI {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					try {
-						UIManager.setLookAndFeel(UIManager
-								.getSystemLookAndFeelClassName());
-					} catch (Exception e1) {
-					}
+					App.setupLookAndFeel();
 					PreferencesUI window = new PreferencesUI();
-					window.frmZpisync.setVisible(true);
+					window.setDefaultCloseOperation(EXIT_ON_CLOSE);
+					window.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -56,26 +55,31 @@ public class PreferencesUI {
 	 * Create the application.
 	 */
 	public PreferencesUI() {
+		this(new NullAppController());
+	}
+
+	public PreferencesUI(AppController app) {
+		this.app = app;
 		initialize();
 	}
 
+	// @formatter:off
+	
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	@SuppressWarnings({ "rawtypes", "serial", "unchecked" })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void initialize() {
-		frmZpisync = new JFrame();
-		frmZpisync.setIconImage(Toolkit.getDefaultToolkit().getImage(PreferencesUI.class.getResource("/zpisync/shared/resources/appicon.png")));
-		frmZpisync.setLocationRelativeTo(null);
-		frmZpisync.setTitle("ZpiSync Preferences");
-		frmZpisync.setSize(415, 463);
-		frmZpisync.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setIconImage(Resources.getAppIcon());
+		setLocationRelativeTo(null);
+		setTitle("ZpiSync Preferences");
+		setSize(415, 463);
 
 		JPanel panel = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
 		flowLayout.setAlignOnBaseline(true);
 		flowLayout.setAlignment(FlowLayout.RIGHT);
-		frmZpisync.getContentPane().add(panel, BorderLayout.SOUTH);
+		getContentPane().add(panel, BorderLayout.SOUTH);
 
 		JButton btnNewButton_1 = new JButton("OK");
 		btnNewButton_1.setPreferredSize(new Dimension(75, 24));
@@ -88,7 +92,7 @@ public class PreferencesUI {
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBorder(new EmptyBorder(4, 4, 0, 4));
-		frmZpisync.getContentPane().add(tabbedPane, BorderLayout.CENTER);
+		getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		
 		JPanel panel_3 = new JPanel();
 		panel_3.setBackground(SystemColor.window);
@@ -181,11 +185,11 @@ public class PreferencesUI {
 		scrollPane.setViewportView(table);
 		table.setModel(new DefaultTableModel(
 			new Object[][] {
-				{"aa", null, "d"},
+				{"0", "localhost", "now"},
 				{null, null, null},
 			},
 			new String[] {
-				"UUID", "Hostname", "Last sync"
+				"UUID", "Name", "Last sync"
 			}
 		) {
 			Class[] columnTypes = new Class[] {
@@ -201,4 +205,6 @@ public class PreferencesUI {
 		panel_2.setBackground(SystemColor.window);
 		tabbedPane.addTab("Files", null, panel_2, null);
 	}
+	
+	// @formatter:on
 }
