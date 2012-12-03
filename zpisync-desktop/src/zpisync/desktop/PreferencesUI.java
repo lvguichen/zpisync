@@ -24,6 +24,7 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
+import java.awt.Toolkit;
 
 public class PreferencesUI {
 
@@ -64,6 +65,7 @@ public class PreferencesUI {
 	@SuppressWarnings({ "rawtypes", "serial", "unchecked" })
 	private void initialize() {
 		frmZpisync = new JFrame();
+		frmZpisync.setIconImage(Toolkit.getDefaultToolkit().getImage(PreferencesUI.class.getResource("/zpisync/shared/resources/appicon.png")));
 		frmZpisync.setLocationRelativeTo(null);
 		frmZpisync.setTitle("ZpiSync Preferences");
 		frmZpisync.setSize(415, 463);
