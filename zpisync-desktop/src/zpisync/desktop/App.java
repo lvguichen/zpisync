@@ -78,6 +78,7 @@ public class App implements AppController {
 
 	@Override
 	public void exit() {
+		log.info("Application shutdown");
 		System.exit(0);
 	}
 

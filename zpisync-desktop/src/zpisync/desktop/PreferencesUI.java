@@ -31,7 +31,8 @@ public class PreferencesUI extends JFrame {
 	private static final Logger log = Logger.getLogger(PreferencesUI.class.getName());
 
 	private AppController app;
-	private JTable table;
+	private JTable tblDevices;
+	private JTable tblFiles;
 
 	/**
 	 * Launch the application.
@@ -81,14 +82,14 @@ public class PreferencesUI extends JFrame {
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		getContentPane().add(panel, BorderLayout.SOUTH);
 
-		JButton btnNewButton_1 = new JButton("OK");
-		btnNewButton_1.setPreferredSize(new Dimension(75, 24));
-		btnNewButton_1.setSize(new Dimension(200, 200));
-		panel.add(btnNewButton_1);
+		JButton btnOk = new JButton("OK");
+		btnOk.setPreferredSize(new Dimension(75, 24));
+		btnOk.setSize(new Dimension(200, 200));
+		panel.add(btnOk);
 
-		JButton btnNewButton = new JButton("Cancel");
-		btnNewButton.setPreferredSize(new Dimension(75, 24));
-		panel.add(btnNewButton);
+		JButton btnCancel = new JButton("Cancel");
+		btnCancel.setPreferredSize(new Dimension(75, 24));
+		panel.add(btnCancel);
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBorder(new EmptyBorder(4, 4, 0, 4));
@@ -145,7 +146,7 @@ public class PreferencesUI extends JFrame {
 		
 		JLabel lblListOfKnown = new JLabel("List of known devices:");
 		
-		JButton btnNewButton_2 = new JButton("Information");
+		JButton btnDeviceInfo = new JButton("Information");
 		
 		JButton btnForget = new JButton("Forget");
 		
@@ -159,7 +160,7 @@ public class PreferencesUI extends JFrame {
 						.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
 							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
 							.addGroup(gl_panel_1.createSequentialGroup()
-								.addComponent(btnNewButton_2)
+								.addComponent(btnDeviceInfo)
 								.addPreferredGap(ComponentPlacement.RELATED)
 								.addComponent(btnForget)))
 						.addComponent(lblListOfKnown))
@@ -174,16 +175,16 @@ public class PreferencesUI extends JFrame {
 					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnNewButton_2)
+						.addComponent(btnDeviceInfo)
 						.addComponent(btnForget))
 					.addContainerGap())
 		);
-		gl_panel_1.linkSize(SwingConstants.VERTICAL, new Component[] {btnNewButton_2, btnForget});
-		gl_panel_1.linkSize(SwingConstants.HORIZONTAL, new Component[] {btnNewButton_2, btnForget});
+		gl_panel_1.linkSize(SwingConstants.VERTICAL, new Component[] {btnDeviceInfo, btnForget});
+		gl_panel_1.linkSize(SwingConstants.HORIZONTAL, new Component[] {btnDeviceInfo, btnForget});
 		
-		table = new JTable();
-		scrollPane.setViewportView(table);
-		table.setModel(new DefaultTableModel(
+		tblDevices = new JTable();
+		scrollPane.setViewportView(tblDevices);
+		tblDevices.setModel(new DefaultTableModel(
 			new Object[][] {
 				{"0", "localhost", "now"},
 				{null, null, null},
@@ -198,12 +199,44 @@ public class PreferencesUI extends JFrame {
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
+			boolean[] columnEditables = new boolean[] {
+				false, false, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
 		});
 		panel_1.setLayout(gl_panel_1);
 
 		JPanel panel_2 = new JPanel();
 		panel_2.setBackground(SystemColor.window);
 		tabbedPane.addTab("Files", null, panel_2, null);
+		panel_2.setLayout(new BorderLayout(0, 0));
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		panel_2.add(scrollPane_1);
+		
+		tblFiles = new JTable();
+		tblFiles.setModel(new DefaultTableModel(
+			new Object[][] {
+				{null, null, null},
+			},
+			new String[] {
+				"", "Path", "Last Modified"
+			}
+		) {
+			boolean[] columnEditables = new boolean[] {
+				false, false, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		});
+		tblFiles.getColumnModel().getColumn(0).setResizable(false);
+		tblFiles.getColumnModel().getColumn(0).setPreferredWidth(20);
+		tblFiles.getColumnModel().getColumn(0).setMinWidth(20);
+		tblFiles.getColumnModel().getColumn(0).setMaxWidth(20);
+		scrollPane_1.setViewportView(tblFiles);
 	}
 	
 	// @formatter:on
