@@ -1,4 +1,4 @@
-package zpisync.desktop;
+package zpisync.desktop.controllers;
 
 import java.awt.TrayIcon.MessageType;
 
@@ -10,6 +10,8 @@ public interface AppController {
 	void showPreferences();
 
 	void syncNow();
+	
+	AppController NULL = new NullAppController();
 }
 
 class NullAppController implements AppController {

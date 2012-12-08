@@ -1,4 +1,4 @@
-package zpisync.desktop;
+package zpisync.desktop.views;
 
 import java.awt.AWTException;
 import java.awt.MenuItem;
@@ -11,9 +11,12 @@ import java.awt.event.ActionListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class TrayUI implements ActionListener {
+import zpisync.desktop.Resources;
+import zpisync.desktop.controllers.AppController;
 
-	private static final Logger log = Logger.getLogger(TrayUI.class.getName());
+public class TrayView implements ActionListener {
+
+	private static final Logger log = Logger.getLogger(TrayView.class.getName());
 
 	private AppController app;
 	private TrayIcon trayIcon;
@@ -25,11 +28,11 @@ public class TrayUI implements ActionListener {
 	/**
 	 * Create the frame.
 	 */
-	public TrayUI() {
-		this(new NullAppController());
+	public TrayView() {
+		this(AppController.NULL);
 	}
 
-	public TrayUI(AppController app) {
+	public TrayView(AppController app) {
 		this.app = app;
 		createTrayIcon();
 	}

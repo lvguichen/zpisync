@@ -1,4 +1,4 @@
-package zpisync.desktop;
+package zpisync.desktop.views;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -25,10 +25,14 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
-@SuppressWarnings("serial")
-public class PreferencesUI extends JFrame {
+import zpisync.desktop.App;
+import zpisync.desktop.Resources;
+import zpisync.desktop.controllers.AppController;
 
-	private static final Logger log = Logger.getLogger(PreferencesUI.class.getName());
+@SuppressWarnings("serial")
+public class PreferencesView extends JFrame {
+
+	private static final Logger log = Logger.getLogger(PreferencesView.class.getName());
 
 	private AppController app;
 	private JTable tblDevices;
@@ -42,7 +46,7 @@ public class PreferencesUI extends JFrame {
 			public void run() {
 				try {
 					App.setupLookAndFeel();
-					PreferencesUI window = new PreferencesUI();
+					PreferencesView window = new PreferencesView();
 					window.setDefaultCloseOperation(EXIT_ON_CLOSE);
 					window.setVisible(true);
 				} catch (Exception e) {
@@ -55,11 +59,11 @@ public class PreferencesUI extends JFrame {
 	/**
 	 * Create the application.
 	 */
-	public PreferencesUI() {
-		this(new NullAppController());
+	public PreferencesView() {
+		this(AppController.NULL);
 	}
 
-	public PreferencesUI(AppController app) {
+	public PreferencesView(AppController app) {
 		this.app = app;
 		initialize();
 	}

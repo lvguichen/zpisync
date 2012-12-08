@@ -7,12 +7,16 @@ import java.util.logging.Logger;
 
 import javax.swing.UIManager;
 
+import zpisync.desktop.controllers.AppController;
+import zpisync.desktop.views.PreferencesView;
+import zpisync.desktop.views.TrayView;
+
 public class App implements AppController {
 
 	private static final Logger log = Logger.getLogger(App.class.getName());
 
-	private PreferencesUI prefsUi;
-	private TrayUI trayUi;
+	private PreferencesView prefsView;
+	private TrayView trayView;
 
 	/**
 	 * @param args
@@ -57,18 +61,18 @@ public class App implements AppController {
 	}
 
 	private void createUI() {
-		trayUi = new TrayUI(this);
-		prefsUi = new PreferencesUI(this);
+		trayView = new TrayView(this);
+		prefsView = new PreferencesView(this);
 	}
 
 	@Override
 	public void displayMessage(String caption, String text, MessageType messageType) {
-		trayUi.displayMessage(caption, text, messageType);
+		trayView.displayMessage(caption, text, messageType);
 	}
 
 	@Override
 	public void showPreferences() {
-		prefsUi.setVisible(true);
+		prefsView.setVisible(true);
 	}
 
 	@Override
