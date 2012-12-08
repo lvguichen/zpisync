@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <uses-sdk android:minSdkVersion="7"/>
 
@@ -24,10 +25,10 @@
         </activity>
 
         <activity android:name=".BrowseActivity"/>
-        <activity android:name=".DemoActivity"/>
+        <activity android:name="zpisync.android.browser.DemoActivity"/>
 
         <!-- Custom AndroidUpnpServiceImpl - see the source -->
-        <service android:name=".BrowserUpnpService"/>
+        <service android:name="zpisync.android.browser.BrowserUpnpService"/>
 
     </application>
 

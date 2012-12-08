@@ -29,6 +29,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import org.teleal.cling.android.AndroidUpnpService;
 import zpisync.android.browser.R;
+import zpisync.android.handlers.FileSystemConfig;
+import zpisync.android.handlers.FirstRun;
+
 import org.teleal.cling.binding.LocalServiceBindingException;
 import org.teleal.cling.binding.annotations.AnnotationLocalServiceBinder;
 import org.teleal.cling.model.DefaultServiceManager;
@@ -104,7 +107,8 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.demo);
-
+        log.info(""+FileSystemConfig.STARTDIR);
+        log.info(FirstRun.prepareDevice());
         getApplicationContext().bindService(
                 new Intent(this, BrowserUpnpService.class),
                 serviceConnection,
@@ -128,6 +132,7 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent event) {
         if (event.getPropertyName().equals("status")) {
             log.info("Turning light: " + event.getNewValue());
+            
             setLightbulb((Boolean) event.getNewValue());
         }
     }

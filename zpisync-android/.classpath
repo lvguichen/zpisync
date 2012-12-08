@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/zpisync-shared">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="E:/Documents/GitHub/zpisync/zpisync-shared"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/cling-distribution-1.0.5.zip"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="lib" path="/zpisync-shared/libs/cling-distribution-1.0.5/core/cling-core-1.0.5.jar"/>
-	<classpathentry kind="lib" path="/zpisync-shared/libs/cling-distribution-1.0.5/core/teleal-common-1.0.13.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/zpisync-shared"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
