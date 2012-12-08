@@ -10,25 +10,21 @@ public interface AppController {
 	void showPreferences();
 
 	void syncNow();
-	
-	AppController NULL = new NullAppController();
-}
 
-class NullAppController implements AppController {
+	AppController NULL = new AppController() {
+		public void displayMessage(String caption, String text, MessageType messageType) {
+		}
 
-	public void displayMessage(String caption, String text, MessageType messageType) {
-	}
+		@Override
+		public void exit() {
+		}
 
-	@Override
-	public void exit() {
-	}
+		@Override
+		public void showPreferences() {
+		}
 
-	@Override
-	public void showPreferences() {
-	}
-
-	@Override
-	public void syncNow() {
-	}
-
+		@Override
+		public void syncNow() {
+		}
+	};
 }

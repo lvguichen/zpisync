@@ -1,5 +1,5 @@
 package zpisync.desktop;
 
-public interface IView {
+public interface IView<TModel extends IModel> {
 
 }

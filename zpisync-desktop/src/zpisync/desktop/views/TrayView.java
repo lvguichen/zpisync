@@ -12,9 +12,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import zpisync.desktop.Resources;
+import zpisync.desktop.ViewBase;
 import zpisync.desktop.controllers.AppController;
+import zpisync.desktop.models.TrayModel;
 
-public class TrayView implements ActionListener {
+public class TrayView extends ViewBase<TrayModel> implements ActionListener {
 
 	private static final Logger log = Logger.getLogger(TrayView.class.getName());
 

@@ -26,11 +26,13 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
 import zpisync.desktop.App;
+import zpisync.desktop.IView;
 import zpisync.desktop.Resources;
 import zpisync.desktop.controllers.AppController;
+import zpisync.desktop.models.PreferencesModel;
 
 @SuppressWarnings("serial")
-public class PreferencesView extends JFrame {
+public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 
 	private static final Logger log = Logger.getLogger(PreferencesView.class.getName());
 
