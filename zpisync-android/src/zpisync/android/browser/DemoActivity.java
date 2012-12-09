@@ -32,6 +32,7 @@ import zpisync.android.browser.R;
 import zpisync.android.handlers.ConfigHandler;
 import zpisync.android.handlers.RunHandler;
 import zpisync.android.handlers.SyncHandler;
+import zpisync.shared.services.SwitchPower;
 
 import org.teleal.cling.binding.LocalServiceBindingException;
 import org.teleal.cling.binding.annotations.AnnotationLocalServiceBinder;

@@ -1,6 +1,9 @@
 package zpisync.shared.services;
 
-public interface UpnpService {
+/**
+ * Interface for UPNP service.
+ */
+public interface NotificationService {
 	/** URL with actual web service */
 	String getEndpointUrl();
 }

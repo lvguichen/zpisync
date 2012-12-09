@@ -5,6 +5,9 @@ import java.util.List;
 
 import zpisync.shared.FileInfo;
 
+/**
+ * Interface for REST service.
+ */
 public interface SyncService {
 
 	Date getLastModificationDate();
