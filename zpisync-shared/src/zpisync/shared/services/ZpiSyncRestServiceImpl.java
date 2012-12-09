@@ -122,8 +122,8 @@ public class ZpiSyncRestServiceImpl {
 		@Get
 		public FileInfo retrieve() {
 			FileInfo fi = new FileInfo();
-			fi.setId(123);
-			fi.setName("Some name");
+			fi.setPath("Foo/Bar.txt");
+			fi.setName("Bar.txt");
 			fi.setSize(1234);
 			fi.setModificationTime(new Date());
 			return fi;

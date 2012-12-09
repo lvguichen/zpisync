@@ -3,8 +3,7 @@ package zpisync.shared;
 import java.util.Date;
 
 public class FileInfo {
-	private long id;
-	private long parentId;
+	private String path;
 	private String name;
 	private Date changeTime;
 	private Date modificationTime;
@@ -21,28 +20,10 @@ public class FileInfo {
 		if (getClass() != obj.getClass())
 			return false;
 		FileInfo other = (FileInfo) obj;
-		if (changeTime == null) {
-			if (other.changeTime != null)
+		if (path == null) {
+			if (other.path != null)
 				return false;
-		} else if (!changeTime.equals(other.changeTime))
-			return false;
-		if (id != other.id)
-			return false;
-		if (modificationTime == null) {
-			if (other.modificationTime != null)
-				return false;
-		} else if (!modificationTime.equals(other.modificationTime))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (parentId != other.parentId)
-			return false;
-		if (removed != other.removed)
-			return false;
-		if (size != other.size)
+		} else if (!path.equals(other.path))
 			return false;
 		return true;
 	}
@@ -51,8 +32,8 @@ public class FileInfo {
 		return changeTime;
 	}
 
-	public long getId() {
-		return id;
+	public String getPath() {
+		return path;
 	}
 
 	public Date getModificationTime() {
@@ -63,10 +44,6 @@ public class FileInfo {
 		return name;
 	}
 
-	public long getParentId() {
-		return parentId;
-	}
-
 	public long getSize() {
 		return size;
 	}
@@ -75,13 +52,7 @@ public class FileInfo {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((changeTime == null) ? 0 : changeTime.hashCode());
-		result = prime * result + (int) (id ^ (id >>> 32));
-		result = prime * result + ((modificationTime == null) ? 0 : modificationTime.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + (int) (parentId ^ (parentId >>> 32));
-		result = prime * result + (removed ? 1231 : 1237);
-		result = prime * result + (int) (size ^ (size >>> 32));
+		result = prime * result + ((path == null) ? 0 : path.hashCode());
 		return result;
 	}
 
@@ -93,8 +64,8 @@ public class FileInfo {
 		this.changeTime = changeTime;
 	}
 
-	public void setId(long id) {
-		this.id = id;
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 	public void setModificationTime(Date modificationTime) {
@@ -103,10 +74,6 @@ public class FileInfo {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public void setParentId(long parentId) {
-		this.parentId = parentId;
 	}
 
 	public void setRemoved(boolean removed) {
@@ -119,7 +86,7 @@ public class FileInfo {
 
 	@Override
 	public String toString() {
-		return "FileInfo [id=" + id + ", parentId=" + parentId + ", name=" + name + ", removed=" + removed + "]";
+		return "FileInfo [path=" + path + ", removed=" + removed + "]";
 	}
 
 }

@@ -22,7 +22,5 @@ public interface SyncService {
 
 	// TODO need to know which files were deleted/renamed
 
-	FileInfo getFileInfo(long fileId);
-
-	byte[] getFileData(long fileId);
+	FileInfo getFileInfo(String path);
 }

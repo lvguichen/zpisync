@@ -91,7 +91,7 @@ public class SyncHandler {
 			if (file.equals(sharedList.get(i))){
 				return 0;
 			} else {
-				if (file.getId()==sharedList.get(i).getId()){
+				if (file.getPath().equals(sharedList.get(i).getPath())){
 					FileInfo anotherFile = sharedList.get(i);
 					Date myDate = file.getModificationTime();
 					Date shDate = anotherFile.getModificationTime();
