@@ -2,7 +2,6 @@ package zpisync.desktop;
 
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
-import org.teleal.cling.model.message.header.STAllHeader;
 import org.teleal.cling.model.meta.LocalDevice;
 import org.teleal.cling.model.meta.RemoteDevice;
 import org.teleal.cling.registry.Registry;
@@ -16,7 +15,8 @@ public class UpnpControlPoint {
 		RegistryListener listener = new RegistryListener() {
 
 			public void remoteDeviceDiscoveryStarted(Registry registry, RemoteDevice device) {
-				System.out.println("Discovery started: " + device.getDisplayString() + " " + device.getDetails().getFriendlyName() + " " + device);
+				System.out.println("Discovery started: " + device.getDisplayString() + " "
+						+ device.getDetails().getFriendlyName() + " " + device);
 			}
 
 			public void remoteDeviceDiscoveryFailed(Registry registry, RemoteDevice device, Exception ex) {
@@ -28,7 +28,8 @@ public class UpnpControlPoint {
 			}
 
 			public void remoteDeviceUpdated(Registry registry, RemoteDevice device) {
-				//System.out.println("Remote device updated: " + device.getDisplayString());
+				// System.out.println("Remote device updated: " +
+				// device.getDisplayString());
 			}
 
 			public void remoteDeviceRemoved(Registry registry, RemoteDevice device) {
@@ -59,11 +60,11 @@ public class UpnpControlPoint {
 
 		// Send a search message to all devices and services, they should
 		// respond soon
-		upnpService.getControlPoint().search(/*new STAllHeader()*/);
+		upnpService.getControlPoint().search(/* new STAllHeader() */);
 
 		// Let's wait 10 seconds for them to respond
 		System.out.println("Waiting 10 seconds before shutting down...");
-		//Thread.sleep(10000);
+		// Thread.sleep(10000);
 		System.in.read();
 
 		// Release all resources and advertise BYEBYE to other UPnP devices
