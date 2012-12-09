@@ -15,4 +15,13 @@ public class Util {
 	public static boolean isNullOrEmpty(String string) {
 		return string == null || string.length() == 0;
 	}
+
+	public static void require(boolean condition) {
+		require(condition, null);
+	}
+	
+	public static void require(boolean condition, String message) {
+		if (!condition)
+			throw new AssertionError(message);
+	}
 }
