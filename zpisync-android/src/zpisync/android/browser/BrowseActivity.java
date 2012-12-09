@@ -26,11 +26,15 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import org.teleal.cling.android.AndroidUpnpService;
 
 import zpisync.android.browser.R;
+import zpisync.android.handlers.RunHandler;
+
 import org.teleal.cling.model.meta.Device;
 import org.teleal.cling.model.meta.LocalDevice;
 import org.teleal.cling.model.meta.RemoteDevice;
@@ -38,7 +42,9 @@ import org.teleal.cling.registry.DefaultRegistryListener;
 import org.teleal.cling.registry.Registry;
 import org.teleal.cling.transport.SwitchableRouter;
 
+import java.io.File;
 import java.util.Comparator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -84,7 +90,23 @@ public class BrowseActivity extends ListActivity {
 
         listAdapter = new ArrayAdapter<DeviceDisplay>(this, android.R.layout.simple_list_item_1);
         setListAdapter(listAdapter);
+        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				String text = listAdapter.getItem(arg2).getDevice().toString();
+				showToast("KUURWA!!!!!"+text ,true);
+		        List<File> filel = RunHandler.listFiles();
+		        StringBuffer sb = new StringBuffer("Files");
+		        int size = filel.size();
+		        for (int i = 0; i < size; i++) {
+					sb.append("|");
+					sb.append(filel.get(i).getAbsolutePath());
+				}
+		        showToast(sb.toString(), true );
+			}
+        	
+		});
         getApplicationContext().bindService(
                 new Intent(this, BrowserUpnpService.class),
                 serviceConnection,
@@ -231,7 +253,7 @@ public class BrowseActivity extends ListActivity {
     }
 
     protected class DeviceDisplay {
-
+    	String testCase = "test";
         Device<?, ?, ?> device;
 
         public DeviceDisplay(Device<?, ?, ?> device) {
@@ -257,12 +279,12 @@ public class BrowseActivity extends ListActivity {
 
         @Override
         public String toString() {
-            String name =
+            String name = 
                     device.getDetails() != null && device.getDetails().getFriendlyName() != null
                             ? device.getDetails().getFriendlyName()
                             : device.getDisplayString();
             // Display a little star while the device is being loaded (see performance optimization earlier)
-            return device.isFullyHydrated() ? name : name + " *";
+            return testCase +  (device.isFullyHydrated() ? name : name + " *");
         }
     }
 

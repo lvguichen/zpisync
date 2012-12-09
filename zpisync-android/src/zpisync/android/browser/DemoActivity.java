@@ -29,8 +29,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import org.teleal.cling.android.AndroidUpnpService;
 import zpisync.android.browser.R;
-import zpisync.android.handlers.FileSystemConfig;
-import zpisync.android.handlers.FirstRun;
+import zpisync.android.handlers.ConfigHandler;
+import zpisync.android.handlers.RunHandler;
+import zpisync.android.handlers.SyncHandler;
 
 import org.teleal.cling.binding.LocalServiceBindingException;
 import org.teleal.cling.binding.annotations.AnnotationLocalServiceBinder;
@@ -50,7 +51,9 @@ import org.teleal.cling.model.types.UDN;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.net.URI;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -63,7 +66,7 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
 
     private AndroidUpnpService upnpService;
 
-    private UDN udn = UDN.uniqueSystemIdentifier("Demo Binary Light");
+    private UDN udn = UDN.uniqueSystemIdentifier(ConfigHandler.getDeviceID());
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
 
@@ -107,13 +110,14 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.demo);
-        log.info(""+FileSystemConfig.STARTDIR);
-        log.info(FirstRun.prepareDevice());
+        log.info(""+ConfigHandler.STARTDIR);
+        log.info(RunHandler.prepareDevice());
         getApplicationContext().bindService(
                 new Intent(this, BrowserUpnpService.class),
                 serviceConnection,
                 Context.BIND_AUTO_CREATE
         );
+
     }
 
     @Override
@@ -168,7 +172,7 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
 
         DeviceDetails details =
                 new DeviceDetails(
-                        "Friendly Binary Light",
+                        ConfigHandler.getDeviceID(),
                         new ManufacturerDetails("ACME"),
                         new ModelDetails("AndroidLight", "A demo light with on/off switch.", "v1")
                 );
