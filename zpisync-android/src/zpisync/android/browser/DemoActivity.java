@@ -136,11 +136,29 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent event) {
         if (event.getPropertyName().equals("status")) {
             log.info("Turning light: " + event.getNewValue());
-            
+            List<File> filel = RunHandler.listFiles();
+	        StringBuffer sb = new StringBuffer("Files");
+	        int size = filel.size();
+	        for (int i = 0; i < size; i++) {
+				sb.append("\n");
+				sb.append(filel.get(i).getAbsolutePath());
+			}
+	        showToast(sb.toString(), true );
+	        
             setLightbulb((Boolean) event.getNewValue());
         }
     }
-
+    protected void showToast(final String msg, final boolean longLength) {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(
+                        DemoActivity.this,
+                        msg,
+                        longLength ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT
+                ).show();
+            }
+        });
+    }
     protected void setLightbulb(final boolean on) {
         runOnUiThread(new Runnable() {
             public void run() {

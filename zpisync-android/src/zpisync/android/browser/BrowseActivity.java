@@ -95,15 +95,8 @@ public class BrowseActivity extends ListActivity {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				String text = listAdapter.getItem(arg2).getDevice().toString();
-				showToast("KUURWA!!!!!"+text ,true);
-		        List<File> filel = RunHandler.listFiles();
-		        StringBuffer sb = new StringBuffer("Files");
-		        int size = filel.size();
-		        for (int i = 0; i < size; i++) {
-					sb.append("|");
-					sb.append(filel.get(i).getAbsolutePath());
-				}
-		        showToast(sb.toString(), true );
+				showToast(text ,true);
+		        
 			}
         	
 		});
