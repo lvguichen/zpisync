@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.teleal.cling.model.types.UDN;
+
 import android.widget.Toast;
 
 public class RunHandler {
@@ -76,7 +78,7 @@ public class RunHandler {
 				}
 				log.append("ID file created");
 				BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-				bw.write("NSQ1");
+				bw.write(UDN.uniqueSystemIdentifier("ZPISYNC").getIdentifierString());
 				bw.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

@@ -67,7 +67,7 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
 
     private AndroidUpnpService upnpService;
 
-    private UDN udn = UDN.uniqueSystemIdentifier(ConfigHandler.getDeviceID());
+    private UDN udn = UDN.uniqueSystemIdentifier("ZPISYNC");
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
 

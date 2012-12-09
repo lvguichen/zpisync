@@ -277,7 +277,7 @@ public class BrowseActivity extends ListActivity {
                             ? device.getDetails().getFriendlyName()
                             : device.getDisplayString();
             // Display a little star while the device is being loaded (see performance optimization earlier)
-            return testCase +  (device.isFullyHydrated() ? name : name + " *");
+            return (device.isFullyHydrated() ? name : name + " *");
         }
     }
 
