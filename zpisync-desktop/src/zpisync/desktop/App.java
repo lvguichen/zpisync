@@ -14,6 +14,7 @@ import zpisync.desktop.models.PreferencesModel;
 import zpisync.desktop.models.TrayModel;
 import zpisync.desktop.views.PreferencesView;
 import zpisync.desktop.views.TrayView;
+import zpisync.shared.Util;
 
 public class App implements AppController {
 

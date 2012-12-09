@@ -16,8 +16,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import zpisync.desktop.ModelBase;
-import zpisync.desktop.Util;
 import zpisync.desktop.XmlUtil;
+import zpisync.shared.Util;
 
 public class PreferencesModel extends ModelBase {
 

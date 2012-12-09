@@ -1,4 +1,4 @@
-package zpisync.desktop;
+package zpisync.shared;
 
 public class Util {
 	

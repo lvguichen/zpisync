@@ -1,0 +1,127 @@
+package zpisync.shared.services;
+
+import java.io.File;
+import java.util.Date;
+
+import org.restlet.Component;
+import org.restlet.Server;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Protocol;
+import org.restlet.engine.Engine;
+import org.restlet.ext.jackson.JacksonConverter;
+import org.restlet.resource.Directory;
+import org.restlet.resource.Get;
+import org.restlet.resource.ServerResource;
+import org.restlet.security.ChallengeAuthenticator;
+import org.restlet.security.MapVerifier;
+
+import zpisync.shared.FileInfo;
+import zpisync.shared.Util;
+
+public class ZpiSyncRestServiceImpl {
+
+	public static void main(String[] args) throws Exception {
+
+		ZpiSyncRestServiceImpl service = new ZpiSyncRestServiceImpl();
+		service.setAuthSecret("secret"); // should be PIN
+		service.setDataDir(new File(Util.getHomeDir(), "ZpiDrive"));
+		service.start();
+
+		System.out.printf("Server running at http://localhost:%d/\n", service.server.getEphemeralPort());
+		System.out.println("Press enter to exit");
+		System.in.read();
+
+		service.stop();
+	}
+
+	/**
+	 * Initialize library on Android.
+	 */
+	public static void initOnAndroid() {
+		Engine.getInstance().getRegisteredConverters().add(new JacksonConverter());
+	}
+
+	File dataDir;
+	Component component;
+	Server server;
+
+	boolean enableAuthentication = false;
+	String authUser = "zpisync";
+	String authSecret = "";
+
+	public void start() throws Exception {
+		component = new Component();
+		server = component.getServers().add(Protocol.HTTP, 0);
+		component.getClients().add(Protocol.FILE);
+
+		component.getDefaultHost().attach("/sync/demo", SyncDemoService.class);
+		component.getDefaultHost().attach("/sync/info", SyncInfoService.class);
+
+		// XXX completely insecure
+		// TODO add SSL
+		// TODO add PIN authentication
+		if (enableAuthentication) {
+			ChallengeAuthenticator guard = new ChallengeAuthenticator(null, ChallengeScheme.HTTP_BASIC, "ZPISYNC");
+			MapVerifier mapVerifier = new MapVerifier();
+			// Load a single static login/secret pair.
+			mapVerifier.getLocalSecrets().put(authSecret, authSecret.toCharArray());
+			guard.setVerifier(mapVerifier);
+
+			component.getDefaultHost().attachDefault(guard);
+		}
+
+		Directory directory = new Directory(component.getContext().createChildContext(), toFileUrl(getDataDir()));
+		directory.setListingAllowed(true);
+		directory.setModifiable(true);
+		component.getDefaultHost().attach("/data/", directory);
+
+		component.start();
+	}
+
+	public void stop() throws Exception {
+		component.stop();
+	}
+
+	private static String toFileUrl(File file) {
+		return file.toURI().toString().replaceFirst("^file:/", "file:///");
+	}
+
+	public String getAuthSecret() {
+		return authSecret;
+	}
+
+	public void setAuthSecret(String authSecret) {
+		this.authSecret = authSecret;
+	}
+
+	public File getDataDir() {
+		return dataDir;
+	}
+
+	public void setDataDir(File dataDir) {
+		this.dataDir = dataDir;
+	}
+
+	public static class SyncDemoService extends ServerResource {
+
+		@Get
+		public String toString() {
+			// Print the requested URI path
+			return String.format("Resource URI  : %s\nRoot URI      : %s\nRouted part   : %s\nRemaining part: %s\n",
+					getReference(), getRootRef(), getReference().getBaseRef(), getReference().getRemainingPart());
+		}
+
+	}
+
+	public static class SyncInfoService extends ServerResource {
+		@Get
+		public FileInfo retrieve() {
+			FileInfo fi = new FileInfo();
+			fi.setId(123);
+			fi.setName("Some name");
+			fi.setSize(1234);
+			fi.setModificationTime(new Date());
+			return fi;
+		}
+	}
+}

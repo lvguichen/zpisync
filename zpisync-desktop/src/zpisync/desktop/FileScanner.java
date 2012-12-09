@@ -17,6 +17,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import zpisync.shared.Util;
+
 public class FileScanner implements Closeable {
 
 	private static final Logger log = Logger.getLogger(FileScanner.class.getName());
