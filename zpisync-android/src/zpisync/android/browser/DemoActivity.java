@@ -109,6 +109,7 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
     };
 
     private ZpiSyncRestServiceImpl restService;
+    //private ZpiUPNPRestletURL urlService;
     static {
     	ZpiSyncRestServiceImpl.initOnAndroid();
     }
@@ -189,7 +190,7 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
         runOnUiThread(new Runnable() {
             public void run() {
                 ImageView imageView = (ImageView) findViewById(R.id.demo_imageview);
-                imageView.setImageResource(on ? R.drawable.lightbulb : R.drawable.lightbulb_off);
+                imageView.setImageResource(on ? R.drawable.synchronize : R.drawable.synchronize_off);
                 // You can NOT externalize this color into /res/values/colors.xml. Go on, try it!
                 imageView.setBackgroundColor(on ? Color.parseColor("#9EC942") : Color.WHITE);
             }
