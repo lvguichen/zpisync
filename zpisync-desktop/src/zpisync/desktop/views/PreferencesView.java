@@ -8,17 +8,22 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.logging.Logger;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -39,6 +44,8 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 	private AppController app;
 	private JTable tblDevices;
 	private JTable tblFiles;
+	private JLabel lblPin;
+	private JTextField tfDataDir;
 
 	/**
 	 * Launch the application.
@@ -70,12 +77,33 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 		initialize();
 	}
 
-	// @formatter:off
-	
+	protected void onBtnOkClicked(ActionEvent e) {
+		app.saveState();
+		setVisible(false);
+	}
+
+	protected void onBtnCancelClicked(ActionEvent e) {
+		setVisible(false);
+	}
+
+	protected void onBtnBrowseDataDirClicked(ActionEvent e) {
+		JFileChooser fc = new JFileChooser(tfDataDir.getText());
+		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		fc.setMultiSelectionEnabled(false);
+		fc.showOpenDialog(this);
+		if (fc.getSelectedFile() != null)
+			tfDataDir.setText(fc.getSelectedFile().getAbsolutePath());
+	}
+
+	protected void onBtnGenerateNewPinClicked(ActionEvent e) {
+		lblPin.setText(PreferencesModel.generatePin());
+	}
+
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
+	// @formatter:off
 	private void initialize() {
 		setIconImage(Resources.getAppIcon());
 		setLocationRelativeTo(null);
@@ -89,11 +117,21 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 		getContentPane().add(panel, BorderLayout.SOUTH);
 
 		JButton btnOk = new JButton("OK");
+		btnOk.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onBtnOkClicked(e);
+			}
+		});
 		btnOk.setPreferredSize(new Dimension(75, 24));
 		btnOk.setSize(new Dimension(200, 200));
 		panel.add(btnOk);
 
 		JButton btnCancel = new JButton("Cancel");
+		btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onBtnCancelClicked(e);
+			}
+		});
 		btnCancel.setPreferredSize(new Dimension(75, 24));
 		panel.add(btnCancel);
 
@@ -108,13 +146,31 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 		JLabel lblSecurityPin = new JLabel("Security PIN:");
 		
 		JButton btnGenerateNewPin = new JButton("Generate new PIN");
+		btnGenerateNewPin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onBtnGenerateNewPinClicked(e);
+			}
+		});
 		
-		JLabel lblPin = new JLabel("81X301Z");
+		lblPin = new JLabel("81X301Z");
 		lblPin.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPin.setBorder(new LineBorder(SystemColor.controlHighlight));
 		lblPin.setFont(new Font("Tahoma", Font.PLAIN, 32));
 		lblPin.setOpaque(true);
 		lblPin.setBackground(new Color(255, 250, 205));
+		
+		JLabel lblDataDir = new JLabel("Data Directory:");
+		
+		tfDataDir = new JTextField();
+		tfDataDir.setEditable(false);
+		tfDataDir.setColumns(10);
+		
+		JButton btnBrowseDataDir = new JButton("...");
+		btnBrowseDataDir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onBtnBrowseDataDirClicked(e);
+			}
+		});
 		GroupLayout gl_panel_3 = new GroupLayout(panel_3);
 		gl_panel_3.setHorizontalGroup(
 			gl_panel_3.createParallelGroup(Alignment.TRAILING)
@@ -122,10 +178,20 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 					.addContainerGap()
 					.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panel_3.createSequentialGroup()
-							.addComponent(lblSecurityPin)
-							.addGap(10)
-							.addComponent(lblPin, GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
-							.addGap(10))
+							.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblDataDir)
+								.addComponent(lblSecurityPin))
+							.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_panel_3.createSequentialGroup()
+									.addGap(3)
+									.addComponent(lblPin, GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
+									.addGap(10))
+								.addGroup(gl_panel_3.createSequentialGroup()
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(tfDataDir, GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(btnBrowseDataDir)
+									.addContainerGap())))
 						.addGroup(Alignment.TRAILING, gl_panel_3.createSequentialGroup()
 							.addComponent(btnGenerateNewPin)
 							.addContainerGap())))
@@ -142,8 +208,14 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 							.addComponent(lblSecurityPin)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnGenerateNewPin)
-					.addContainerGap(278, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panel_3.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblDataDir)
+						.addComponent(tfDataDir, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnBrowseDataDir))
+					.addContainerGap(249, Short.MAX_VALUE))
 		);
+		gl_panel_3.linkSize(SwingConstants.HORIZONTAL, new Component[] {lblSecurityPin, lblDataDir});
 		panel_3.setLayout(gl_panel_3);
 
 		JPanel panel_1 = new JPanel();
@@ -244,6 +316,17 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 		tblFiles.getColumnModel().getColumn(0).setMaxWidth(20);
 		scrollPane_1.setViewportView(tblFiles);
 	}
-	
 	// @formatter:on
+
+	@Override
+	public void modelToView(PreferencesModel model) {
+		lblPin.setText(model.getPin());
+		tfDataDir.setText(model.getDataDir().getAbsolutePath());
+	}
+
+	@Override
+	public void viewToModel(PreferencesModel model) {
+		model.setPin(lblPin.getText());
+		model.setDataDir(new File(tfDataDir.getText()));
+	}
 }

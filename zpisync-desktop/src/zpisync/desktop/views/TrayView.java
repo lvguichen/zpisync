@@ -92,4 +92,16 @@ public class TrayView extends ViewBase<TrayModel> implements ActionListener {
 		}
 	}
 
+	@Override
+	public void modelToView(TrayModel model) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void viewToModel(TrayModel model) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

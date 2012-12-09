@@ -9,6 +9,8 @@ public interface AppController {
 
 	void showPreferences();
 
+	void saveState();
+
 	void syncNow();
 
 	AppController NULL = new AppController() {
@@ -25,6 +27,10 @@ public interface AppController {
 
 		@Override
 		public void syncNow() {
+		}
+
+		@Override
+		public void saveState() {
 		}
 	};
 }
