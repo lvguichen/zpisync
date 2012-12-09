@@ -37,6 +37,11 @@
 			<locationURI>WORKSPACE_LOC/zpisync/zpisync-shared/libs/cling-distribution-1.0.5/core/cling-core-1.0.5.jar</locationURI>
 		</link>
 		<link>
+			<name>libs/joda-time-2.1.jar</name>
+			<type>1</type>
+			<locationURI>WORKSPACE_LOC/zpisync/zpisync-shared/libs/joda-time-2.1/joda-time-2.1.jar</locationURI>
+		</link>
+		<link>
 			<name>libs/org.codehaus.jackson.core.jar</name>
 			<type>1</type>
 			<locationURI>WORKSPACE_LOC/zpisync/zpisync-shared/libs/restlet-android-2.0.15/lib/org.codehaus.jackson_1.4/org.codehaus.jackson.core.jar</locationURI>

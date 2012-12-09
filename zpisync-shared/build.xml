@@ -11,13 +11,16 @@
         <get-zip base="http://4thline.org/projects/download/" file="cling-distribution-1.0.5" />
         <get-zip base="http://www.restlet.org/downloads/2.0/" file="restlet-jse-2.0.15" />
         <get-zip base="http://www.restlet.org/downloads/2.0/" file="restlet-android-2.0.15" />
+        <get-zip base="http://sourceforge.net/projects/joda-time/files/joda-time/2.1/" file="joda-time-2.1-dist" urlSuffix="/download?use_mirror=autoselect" />
     </target>
     
     <macrodef name="get-zip">
         <attribute name="file" />
-        <attribute name="base" />
+        <attribute name="base" default="" />
+        <attribute name="urlSuffix" default="" />
+        <attribute name="url" default="@{base}@{file}.zip@{urlSuffix}" />
         <sequential>
-            <get dest="${libs}" src="@{base}@{file}.zip" usetimestamp="true" />
+            <get dest="${libs}/@{file}.zip" src="@{url}" usetimestamp="true" />
             <!-- eclipse keeps it open -->
             <delete dir="${libs}/@{file}" failonerror="false" />
             <unzip dest="${libs}" src="${libs}/@{file}.zip" />
