@@ -1,5 +1,9 @@
 package zpisync.android.handlers;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,7 +53,34 @@ public class SyncHandler {
 			}
 		}
 	}
-	
+	public static String writeList(List<File> fl){
+		String bString = buildListToSend(fl);
+		File file = new File (ConfigHandler.SYNCFILE);
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+			bw.write(bString);
+			bw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	public static String buildListToSend(List<File> fl){
+		StringBuffer sb = new StringBuffer();
+		int size = fl.size();
+		for (int i = 0; i < size; i++) {
+			sb.append(getFileID(fl.get(i))+'\n');
+		}
+		return sb.toString();
+	}
+	public static String getFileID (File file){
+		String path = file.getAbsolutePath();
+		File f = new File (ConfigHandler.SYNCDIR);
+		String dir = f.getAbsolutePath();
+		return path.substring(path.lastIndexOf(dir)+dir.length()+1);
+	}
 	private int whatDo(FileInfo file){
 		// 0 - nothing
 		// 1 - send 

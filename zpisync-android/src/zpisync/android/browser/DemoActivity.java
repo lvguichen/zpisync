@@ -138,13 +138,15 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
             log.info("Turning light: " + event.getNewValue());
             List<File> filel = RunHandler.listFiles();
 	        StringBuffer sb = new StringBuffer("Files");
-	        int size = filel.size();
-	        for (int i = 0; i < size; i++) {
-				sb.append("\n");
-				sb.append(filel.get(i).getAbsolutePath());
-			}
-	        showToast(sb.toString(), true );
-	        
+//	        int size = filel.size();
+//	        for (int i = 0; i < size; i++) {
+//				sb.append("\n");
+//				sb.append(filel.get(i).getAbsolutePath());
+//			}
+//	        showToast(sb.toString(), true );
+	        String fileIDs = SyncHandler.buildListToSend(filel);
+	        SyncHandler.writeList(filel);
+	        showToast(fileIDs,true);
             setLightbulb((Boolean) event.getNewValue());
         }
     }
