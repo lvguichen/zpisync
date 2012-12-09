@@ -33,6 +33,7 @@ import zpisync.android.handlers.ConfigHandler;
 import zpisync.android.handlers.RunHandler;
 import zpisync.android.handlers.SyncHandler;
 import zpisync.shared.services.SwitchPower;
+import zpisync.shared.services.ZpiSyncRestServiceImpl;
 
 import org.teleal.cling.binding.LocalServiceBindingException;
 import org.teleal.cling.binding.annotations.AnnotationLocalServiceBinder;
@@ -107,6 +108,11 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
         }
     };
 
+    private ZpiSyncRestServiceImpl restService;
+    static {
+    	ZpiSyncRestServiceImpl.initOnAndroid();
+    }
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,7 +124,17 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
                 serviceConnection,
                 Context.BIND_AUTO_CREATE
         );
-
+        
+        log.info("About to start REST server");
+        restService = new ZpiSyncRestServiceImpl();
+        restService.setDataDir(new File(ConfigHandler.SYNCDIR));
+        //restService.setAuthSecret("PIN");
+        try {
+			restService.start();
+		} catch (Exception e) {
+			// TODO show error message
+			log.log(Level.SEVERE, "Unable to start REST service", e);
+		}
     }
 
     @Override
@@ -132,6 +148,13 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
                     .removePropertyChangeListener(this);
 
         getApplicationContext().unbindService(serviceConnection);
+        
+        try {
+			restService.stop();
+		} catch (Exception e) {
+			// TODO show error message
+			log.log(Level.SEVERE, "Unable to stop REST service", e);
+		}
     }
 
     public void propertyChange(PropertyChangeEvent event) {

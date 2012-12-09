@@ -3,6 +3,10 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/zpisync-shared"/>
-	<classpathentry kind="lib" path="/zpisync-shared/libs/cling-distribution-1.0.5/support/cling-support-1.0.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="/zpisync-shared/libs/cling-distribution-1.0.5/support/cling-support-1.0.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="/zpisync-shared/libs/restlet-jse-2.0.15/lib/org.codehaus.jackson_1.4/org.codehaus.jackson.core.jar"/>
+	<classpathentry exported="true" kind="lib" path="/zpisync-shared/libs/restlet-jse-2.0.15/lib/org.codehaus.jackson_1.4/org.codehaus.jackson.mapper.jar"/>
+	<classpathentry exported="true" kind="lib" path="/zpisync-shared/libs/restlet-jse-2.0.15/lib/org.restlet.ext.jackson.jar"/>
+	<classpathentry exported="true" kind="lib" path="/zpisync-shared/libs/restlet-jse-2.0.15/lib/org.restlet.jar" sourcepath="/zpisync-shared/libs/restlet-jse-2.0.15/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

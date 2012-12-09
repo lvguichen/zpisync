@@ -2,6 +2,7 @@ package zpisync.shared.services;
 
 import java.io.File;
 import java.util.Date;
+import java.util.logging.Logger;
 
 import org.restlet.Component;
 import org.restlet.Server;
@@ -20,6 +21,8 @@ import zpisync.shared.Util;
 
 public class ZpiSyncRestServiceImpl {
 
+	private static final Logger log = Logger.getLogger(ZpiSyncRestServiceImpl.class.getName());
+
 	public static void main(String[] args) throws Exception {
 
 		ZpiSyncRestServiceImpl service = new ZpiSyncRestServiceImpl();
@@ -27,7 +30,6 @@ public class ZpiSyncRestServiceImpl {
 		service.setDataDir(new File(Util.getHomeDir(), "ZpiDrive"));
 		service.start();
 
-		System.out.printf("Server running at http://localhost:%d/\n", service.server.getEphemeralPort());
 		System.out.println("Press enter to exit");
 		System.in.read();
 
@@ -76,10 +78,13 @@ public class ZpiSyncRestServiceImpl {
 		component.getDefaultHost().attach("/data/", directory);
 
 		component.start();
+
+		log.info(String.format("Server running at http://localhost:%d/\n", server.getEphemeralPort()));
 	}
 
 	public void stop() throws Exception {
 		component.stop();
+		log.info("Server stopped");
 	}
 
 	private static String toFileUrl(File file) {
