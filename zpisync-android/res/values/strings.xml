@@ -4,7 +4,7 @@
 
     <string name="search_lan">Przeszukaj sieć</string>
     <string name="switch_router">Network On/Off</string>
-    <string name="toggle_debug_logging">Reset Device ID</string>
+    <string name="toggle_debug_logging">on/off debug logging</string>
 
     <string name="searching_lan">Szukam urządzeń...</string>
     <string name="enabling_router">Enabling network router...</string>
@@ -14,5 +14,6 @@
 
     <string name="registering_demo_device">Registering UPnP demo device...</string>
     <string name="create_demo_failed">Creating of demo device failed, check the log!</string>
+    <string name="reset_device_ID">Reset Device ID</string>
 
 </resources>

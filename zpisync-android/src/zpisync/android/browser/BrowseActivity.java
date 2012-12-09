@@ -17,6 +17,21 @@
 
 package zpisync.android.browser;
 
+import java.io.File;
+import java.util.Comparator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.teleal.cling.android.AndroidUpnpService;
+import org.teleal.cling.model.meta.Device;
+import org.teleal.cling.model.meta.LocalDevice;
+import org.teleal.cling.model.meta.RemoteDevice;
+import org.teleal.cling.registry.DefaultRegistryListener;
+import org.teleal.cling.registry.Registry;
+import org.teleal.cling.transport.SwitchableRouter;
+
+import zpisync.android.handlers.ConfigHandler;
+import zpisync.android.handlers.RunHandler;
 import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -30,21 +45,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
-import org.teleal.cling.android.AndroidUpnpService;
-
-import zpisync.android.browser.R;
-import zpisync.android.handlers.ConfigHandler;
-import zpisync.android.handlers.RunHandler;
-
-import org.teleal.cling.model.meta.Device;
-import org.teleal.cling.model.meta.LocalDevice;
-import org.teleal.cling.model.meta.RemoteDevice;
-import org.teleal.cling.registry.DefaultRegistryListener;
-import org.teleal.cling.registry.Registry;
-import org.teleal.cling.transport.SwitchableRouter;
-
-import java.io.File;
-import java.util.Comparator;
 
 /**
  * @author Christian Bauer
@@ -119,6 +119,7 @@ public class BrowseActivity extends ListActivity {
         menu.add(0, 0, 0, R.string.search_lan).setIcon(android.R.drawable.ic_menu_search);
         menu.add(0, 1, 0, R.string.switch_router).setIcon(android.R.drawable.ic_menu_revert);
         menu.add(0, 2, 0, R.string.toggle_debug_logging).setIcon(android.R.drawable.ic_menu_info_details);
+        menu.add(0, 3, 0, R.string.reset_device_ID).setIcon(android.R.drawable.ic_menu_info_details);
         return true;
     }
 
@@ -141,6 +142,17 @@ public class BrowseActivity extends ListActivity {
                 }
                 break;
             case 2:
+
+                Logger logger = Logger.getLogger("org.teleal.cling");
+                if (logger.getLevel().equals(Level.FINEST)) {
+                    Toast.makeText(this, R.string.disabling_debug_logging, Toast.LENGTH_SHORT).show();
+                    logger.setLevel(Level.INFO);
+                } else {
+                    Toast.makeText(this, R.string.enabling_debug_logging, Toast.LENGTH_SHORT).show();
+                    logger.setLevel(Level.FINEST);
+                }
+                break;
+            case 3:
             	try{
             		File file = new File(ConfigHandler.IDFILE);
             		if(file.delete()){
@@ -153,15 +165,7 @@ public class BrowseActivity extends ListActivity {
             	}catch(Exception e){
             		e.printStackTrace();
             	}
-//                Logger logger = Logger.getLogger("org.teleal.cling");
-//                if (logger.getLevel().equals(Level.FINEST)) {
-//                    Toast.makeText(this, R.string.disabling_debug_logging, Toast.LENGTH_SHORT).show();
-//                    logger.setLevel(Level.INFO);
-//                } else {
-//                    Toast.makeText(this, R.string.enabling_debug_logging, Toast.LENGTH_SHORT).show();
-//                    logger.setLevel(Level.FINEST);
-//                }
-//                break;
+            	break;
         }
         return false;
     }

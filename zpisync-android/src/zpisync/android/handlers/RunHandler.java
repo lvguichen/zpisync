@@ -78,7 +78,8 @@ public class RunHandler {
 				}
 				log.append("ID file created");
 				BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-				bw.write(UDN.uniqueSystemIdentifier("ZPISYNC").getIdentifierString());
+//				bw.write(UDN.uniqueSystemIdentifier("ZPISYNC").getIdentifierString());
+				bw.write(android.os.Build.MODEL);
 				bw.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
