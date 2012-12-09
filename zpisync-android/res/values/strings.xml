@@ -4,7 +4,7 @@
 
     <string name="search_lan">Przeszukaj sieć</string>
     <string name="switch_router">Network On/Off</string>
-    <string name="toggle_debug_logging">Toggle debug logging</string>
+    <string name="toggle_debug_logging">Reset Device ID</string>
 
     <string name="searching_lan">Szukam urządzeń...</string>
     <string name="enabling_router">Enabling network router...</string>

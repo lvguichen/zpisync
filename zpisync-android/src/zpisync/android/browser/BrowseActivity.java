@@ -33,6 +33,7 @@ import android.widget.Toast;
 import org.teleal.cling.android.AndroidUpnpService;
 
 import zpisync.android.browser.R;
+import zpisync.android.handlers.ConfigHandler;
 import zpisync.android.handlers.RunHandler;
 
 import org.teleal.cling.model.meta.Device;
@@ -44,9 +45,6 @@ import org.teleal.cling.transport.SwitchableRouter;
 
 import java.io.File;
 import java.util.Comparator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Christian Bauer
@@ -143,15 +141,27 @@ public class BrowseActivity extends ListActivity {
                 }
                 break;
             case 2:
-                Logger logger = Logger.getLogger("org.teleal.cling");
-                if (logger.getLevel().equals(Level.FINEST)) {
-                    Toast.makeText(this, R.string.disabling_debug_logging, Toast.LENGTH_SHORT).show();
-                    logger.setLevel(Level.INFO);
-                } else {
-                    Toast.makeText(this, R.string.enabling_debug_logging, Toast.LENGTH_SHORT).show();
-                    logger.setLevel(Level.FINEST);
-                }
-                break;
+            	try{
+            		File file = new File(ConfigHandler.IDFILE);
+            		if(file.delete()){
+            			System.out.println(file.getName() + " is deleted!");
+            			RunHandler.prepareDevice();
+            			finish();
+            		}else{
+            			System.out.println("Delete operation is failed.");
+            		}
+            	}catch(Exception e){
+            		e.printStackTrace();
+            	}
+//                Logger logger = Logger.getLogger("org.teleal.cling");
+//                if (logger.getLevel().equals(Level.FINEST)) {
+//                    Toast.makeText(this, R.string.disabling_debug_logging, Toast.LENGTH_SHORT).show();
+//                    logger.setLevel(Level.INFO);
+//                } else {
+//                    Toast.makeText(this, R.string.enabling_debug_logging, Toast.LENGTH_SHORT).show();
+//                    logger.setLevel(Level.FINEST);
+//                }
+//                break;
         }
         return false;
     }
