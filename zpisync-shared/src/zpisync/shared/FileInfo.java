@@ -6,23 +6,28 @@ import java.util.Date;
 public class FileInfo {
 	private String path;
 	private String name;
+	private boolean isDirectory;
 	private Date modificationTime;
 	private long size;
 
 	private boolean removed;
-	
-	public FileInfo(){
+
+	public FileInfo() {
 		super();
 	}
-	
-	public FileInfo(File file, String zpisDIR){
-		path = file.getAbsolutePath();
-		path = path.substring(path.lastIndexOf(zpisDIR)+zpisDIR.length()+1);
+
+	public FileInfo(File file, File dataDir) {
+		path = relativize(dataDir, file).getPath();
 		name = file.getName();
+		isDirectory = file.isDirectory();
 		modificationTime = new Date(file.lastModified());
 		size = file.length();
 	}
-	
+
+	public static File relativize(File base, File file) {
+		return new File(base.toURI().relativize(file.toURI()).getPath());
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -64,8 +69,16 @@ public class FileInfo {
 		return result;
 	}
 
+	public boolean isDirectory() {
+		return isDirectory;
+	}
+
 	public boolean isRemoved() {
 		return removed;
+	}
+
+	public void setDirectory(boolean isDirectory) {
+		this.isDirectory = isDirectory;
 	}
 
 	public void setPath(String path) {
@@ -90,7 +103,7 @@ public class FileInfo {
 
 	@Override
 	public String toString() {
-		return "FileInfo [path=" + path + ", removed=" + removed + "]";
+		return "FileInfo [path=" + path + ", isDirectory=" + isDirectory + ", removed=" + removed + "]";
 	}
 
 }

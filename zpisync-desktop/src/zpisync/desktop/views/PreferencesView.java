@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -38,6 +39,8 @@ import zpisync.desktop.Resources;
 import zpisync.desktop.controllers.AppController;
 import zpisync.desktop.models.DeviceInfoModel;
 import zpisync.desktop.models.PreferencesModel;
+import zpisync.shared.FileInfo;
+import zpisync.shared.Util;
 
 @SuppressWarnings("serial")
 public class PreferencesView extends JFrame implements IView<PreferencesModel> {
@@ -307,16 +310,23 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 		panel_2.add(scrollPane_1);
 		
 		tblFiles = new JTable();
+		tblFiles.setFillsViewportHeight(true);
 		tblFiles.setModel(new DefaultTableModel(
 			new Object[][] {
-				{null, null, null},
+				{null, null, null, null},
 			},
 			new String[] {
-				"", "Path", "Last Modified"
+				"", "Path", "Size", "Last Modified"
 			}
 		) {
+			Class[] columnTypes = new Class[] {
+				Object.class, Object.class, String.class, Object.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
 			boolean[] columnEditables = new boolean[] {
-				false, false, false
+				false, false, false, false
 			};
 			public boolean isCellEditable(int row, int column) {
 				return columnEditables[column];
@@ -340,6 +350,23 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 		for (DeviceInfoModel devInfo : model.getKnownDevices()) {
 			Object[] rowData = new Object[] { devInfo.getUdn(), devInfo.getDisplayName(), devInfo.getLastSyncTime() };
 			tblDevicesModel.addRow(rowData);
+		}
+	}
+
+	/**
+	 * Cheat a little and update file list outside modelToView for improved
+	 * performance.
+	 * 
+	 * @param files
+	 */
+	public void fireFilesChanged(List<FileInfo> files) {
+		DefaultTableModel tblFilesModel = (DefaultTableModel) tblFiles.getModel();
+		tblFilesModel.setRowCount(0);
+		for (FileInfo fileInfo : files) {
+			String symbol = fileInfo.isDirectory() ? "D" : "";
+			String size = Util.humanReadableByteCount(fileInfo.getSize(), false);
+			Object[] rowData = new Object[] { symbol, fileInfo.getPath(), size, fileInfo.getModificationTime() };
+			tblFilesModel.addRow(rowData);
 		}
 	}
 

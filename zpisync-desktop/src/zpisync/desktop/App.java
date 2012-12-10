@@ -3,7 +3,20 @@ package zpisync.desktop;
 import java.awt.EventQueue;
 import java.awt.TrayIcon.MessageType;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +29,6 @@ import org.teleal.cling.model.meta.Device;
 import org.teleal.cling.model.meta.LocalService;
 import org.teleal.cling.model.meta.RemoteDevice;
 import org.teleal.cling.model.meta.Service;
-import org.teleal.cling.model.types.ServiceType;
 import org.teleal.cling.registry.DefaultRegistryListener;
 import org.teleal.cling.registry.Registry;
 import org.teleal.cling.registry.RegistryListener;
@@ -27,6 +39,7 @@ import zpisync.desktop.models.PreferencesModel;
 import zpisync.desktop.models.TrayModel;
 import zpisync.desktop.views.PreferencesView;
 import zpisync.desktop.views.TrayView;
+import zpisync.shared.FileInfo;
 import zpisync.shared.Util;
 import zpisync.shared.services.SwitchPower;
 
@@ -50,7 +63,11 @@ public class App implements AppController {
 			public void run() {
 				setupLookAndFeel();
 				setInstance(new App());
-				getInstance().initialize();
+				try {
+					getInstance().initialize();
+				} catch (Exception e) {
+					throw new Error(e);
+				}
 			}
 		});
 	}
@@ -75,7 +92,7 @@ public class App implements AppController {
 		}
 	}
 
-	private void initialize() {
+	private void initialize() throws Exception {
 		initializeAppDir();
 		readPreferences();
 		prefsModel.getDataDir().mkdir();
@@ -83,6 +100,7 @@ public class App implements AppController {
 			throw new Error("Data directory corrupted");
 		createUI();
 		startUpnp();
+		startFileScanner();
 		displayMessage("ZpiSync", "Service is now running", MessageType.INFO);
 	}
 
@@ -133,6 +151,92 @@ public class App implements AppController {
 		upnpService.shutdown();
 	}
 
+	FileScanner fileScanner;
+	List<FileInfo> files = new ArrayList<>();
+	Map<String, FileInfo> fileMap = new HashMap<>();
+
+	public List<FileInfo> getFiles() {
+		return files;
+	}
+
+	private FileInfo toFileInfo(FileInfo result, Path relativePath, BasicFileAttributes attrs) {
+		result.setName(relativePath.getFileName().toString());
+		result.setDirectory(attrs.isDirectory());
+		result.setModificationTime(new Date(attrs.lastModifiedTime().toMillis()));
+		result.setPath(relativePath.toString());
+		result.setSize(attrs.size());
+		return result;
+	}
+
+	private FileInfo toFileInfo(Path relativePath, BasicFileAttributes attrs) {
+		return toFileInfo(new FileInfo(), relativePath, attrs);
+	}
+
+	private void addFile(Path relativePath, BasicFileAttributes attrs, boolean initial) {
+		FileInfo fi = toFileInfo(relativePath, attrs);
+		files.add(fi);
+		fileMap.put(fi.getPath(), fi);
+		fireFilesChanged();
+	}
+
+	private void updateFile(Path relativePath, BasicFileAttributes attrs) {
+		FileInfo fi = fileMap.get(relativePath.toString());
+		if (fi == null) {
+			log.severe("missing file info: " + relativePath);
+		}
+		toFileInfo(fi, relativePath, attrs);
+		fireFilesChanged();
+	}
+
+	private void removeFile(Path relativePath) {
+		String path = relativePath.toString();
+		FileInfo fi = fileMap.get(path);
+		files.remove(fi);
+		fileMap.remove(path);
+		fireFilesChanged();
+	}
+
+	protected void fireFilesChanged() {
+		prefsView.fireFilesChanged(files);
+	}
+
+	private void startFileScanner() throws IOException {
+		fileScanner = new FileScanner(prefsModel.getDataDir());
+		fileScanner.addChangeListener(threadSafeFileListener);
+		fileScanner.scan(new SimpleFileVisitor<Path>() {
+
+			@Override
+			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+				if (!dir.equals(prefsModel.getDataDir().toPath())) {
+					addFile(fileScanner.relativize(dir), attrs, true);
+				}
+				return FileVisitResult.CONTINUE;
+			}
+
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				addFile(fileScanner.relativize(file), attrs, true);
+				return FileVisitResult.CONTINUE;
+			}
+
+			@Override
+			public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+				log.log(Level.WARNING, "Cannot visit file: " + file, exc);
+				return FileVisitResult.CONTINUE;
+			}
+		});
+		// XXX start watching before scanning to avoid race
+		fileScanner.startWatcher();
+	}
+
+	private void stopFileScanner() {
+		try {
+			fileScanner.close();
+		} catch (IOException e) {
+			log.log(Level.SEVERE, "Unable to stop FileScanner", e);
+		}
+	}
+
 	@Override
 	public void displayMessage(String caption, String text, MessageType messageType) {
 		trayView.displayMessage(caption, text, messageType);
@@ -158,6 +262,7 @@ public class App implements AppController {
 	@Override
 	public void exit() {
 		stopUpnp();
+		stopFileScanner();
 		log.info("Application shutdown");
 		System.exit(0);
 	}
@@ -243,4 +348,32 @@ public class App implements AppController {
 
 	private RegistryListener threadSafeRegistryListener = EdtProxy.blocking(registryListener, RegistryListener.class);
 
+	private FileScanner.ChangeListener fileListener = new FileScanner.ChangeListener() {
+
+		@Override
+		public void event(WatchEvent<Path> event) {
+			try {
+				Path relativePath = event.context();
+				Path file = fileScanner.resolve(relativePath);
+
+				if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
+					BasicFileAttributes attrs = Files.readAttributes(file, BasicFileAttributes.class);
+					addFile(relativePath, attrs, false);
+				} else if (event.kind() == StandardWatchEventKinds.ENTRY_MODIFY) {
+					BasicFileAttributes attrs = Files.readAttributes(file, BasicFileAttributes.class);
+					updateFile(relativePath, attrs);
+				} else if (event.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
+					removeFile(relativePath);
+				} else {
+					throw new Error("Unhandler event kind: " + event.kind());
+				}
+
+			} catch (IOException e) {
+				log.log(Level.SEVERE, "Unable to process file event", e);
+			}
+		}
+	};
+
+	private FileScanner.ChangeListener threadSafeFileListener = EdtProxy.blocking(fileListener,
+			FileScanner.ChangeListener.class);
 }

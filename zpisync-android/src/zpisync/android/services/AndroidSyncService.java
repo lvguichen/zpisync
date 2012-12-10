@@ -18,7 +18,7 @@ public class AndroidSyncService implements SyncService{
 		fl = new ArrayList<FileInfo>();
 		int size = f.size();
 		for (int i = 0; i < size; i++) {
-			fl.add(new FileInfo(f.get(i),ConfigHandler.SYNCDIR));
+			fl.add(new FileInfo(f.get(i), new File(ConfigHandler.SYNCDIR)));
 		}
 	}
 	

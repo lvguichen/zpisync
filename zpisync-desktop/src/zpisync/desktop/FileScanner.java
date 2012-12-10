@@ -4,16 +4,19 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchEvent.Kind;
-import java.nio.file.WatchEvent.Modifier;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.EventListener;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,7 +44,27 @@ public class FileScanner implements Closeable {
 
 	public static void main(String[] args) {
 		try (FileScanner scanner = new FileScanner(new File(Util.getHomeDir(), "Google Drive"))) {
-			scanner.scan();
+			scanner.scan(new SimpleFileVisitor<Path>() {
+
+				@Override
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+					System.out.printf("Visiting: %s %s %s\n", scanner.relativize(file), attrs.size(),
+							attrs.lastModifiedTime());
+					return FileVisitResult.CONTINUE;
+				}
+
+				@Override
+				public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+					log.log(Level.WARNING, "Cannot visit file: " + file, exc);
+					return FileVisitResult.CONTINUE;
+				}
+			});
+			scanner.addChangeListener(new ChangeListener() {
+				@Override
+				public void event(WatchEvent<Path> event) {
+					System.out.printf("File changed: %s %s %d\n", event.kind(), event.context(), event.count());
+				}
+			});
 			scanner.startWatcher();
 			System.in.read();
 		} catch (IOException e) {
@@ -49,27 +72,12 @@ public class FileScanner implements Closeable {
 		}
 	}
 
-	public void scan() throws IOException {
+	public void scan(FileVisitor<? super Path> visitor) throws IOException {
 		Util.require(rootDirectory.isDirectory());
-
-		Files.walkFileTree(rootPath, new SimpleFileVisitor<Path>() {
-
-			@Override
-			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-				System.out.printf("Visiting: %s %s %s\n", rootPath.relativize(file), attrs.size(),
-						attrs.lastModifiedTime());
-				return FileVisitResult.CONTINUE;
-			}
-
-			@Override
-			public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-				log.log(Level.WARNING, "Cannot visit file: " + file, exc);
-				return FileVisitResult.CONTINUE;
-			}
-		});
+		Files.walkFileTree(rootPath, visitor);
 	}
 
-	private void startWatcher() throws IOException {
+	public void startWatcher() throws IOException {
 		watchService = rootPath.getFileSystem().newWatchService();
 		// XXX FILE_TREE is specific to SunJDK+Windows but there is no other way
 		// to do this reliably
@@ -115,17 +123,68 @@ public class FileScanner implements Closeable {
 			}
 		}
 
-		private void publish(Object createChangeEvent) {
-			// TODO Auto-generated method stub
-
+		private void publish(WatchEvent<Path> changeEvent) {
+			fireChange(changeEvent);
 		}
 
-		private Object createChangeEvent(WatchEvent<Path> event, WatchKey key) {
-			// TODO Auto-generated method stub
-			System.out.printf("File changed: %s %s %d\n", event.kind(), event.context(), event.count());
-			return null;
+		private WatchEvent<Path> createChangeEvent(WatchEvent<Path> event, WatchKey key) {
+			return event;
 		}
 	};
+
+	private List<ChangeListener> changeListeners = new ArrayList<>();
+
+	public synchronized void addChangeListener(ChangeListener listener) {
+		changeListeners.add(listener);
+	}
+
+	public synchronized void removeChangeListener(ChangeListener listener) {
+		changeListeners.remove(listener);
+	}
+
+	protected void fireChange(WatchEvent<Path> event) {
+		for (ChangeListener listener : changeListeners) {
+			try {
+				listener.event(event);
+			} catch (Exception e) {
+				log.log(Level.SEVERE, e.getMessage(), e);
+			}
+		}
+	}
+
+	public interface ChangeListener extends EventListener {
+		void event(WatchEvent<Path> event);
+	}
+
+	private class FakeWatchEvent implements WatchEvent<Path> {
+
+		private WatchEvent.Kind<Path> kind;
+		private int count;
+		private Path context;
+
+		public FakeWatchEvent(WatchEvent.Kind<Path> kind, int count, Path context) {
+			super();
+			this.kind = kind;
+			this.count = count;
+			this.context = context;
+		}
+
+		@Override
+		public WatchEvent.Kind<Path> kind() {
+			return kind;
+		}
+
+		@Override
+		public int count() {
+			return count;
+		}
+
+		@Override
+		public Path context() {
+			return context;
+		}
+
+	}
 
 	@Override
 	public void close() throws IOException {
@@ -147,5 +206,13 @@ public class FileScanner implements Closeable {
 			log.info("FileWatcher unregistered");
 			watchKey = null;
 		}
+	}
+
+	public Path relativize(Path file) {
+		return rootPath.relativize(file);
+	}
+
+	public Path resolve(Path path) {
+		return rootPath.resolve(path);
 	}
 }
