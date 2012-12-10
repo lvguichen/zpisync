@@ -17,24 +17,15 @@
 
 package zpisync.android.browser;
 
-import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.widget.ImageView;
-import android.widget.Toast;
-import org.teleal.cling.android.AndroidUpnpService;
-import zpisync.android.browser.R;
-import zpisync.android.handlers.ConfigHandler;
-import zpisync.android.handlers.RunHandler;
-import zpisync.android.handlers.SyncHandler;
-import zpisync.shared.services.SwitchPower;
-import zpisync.shared.services.ZpiSyncRestServiceImpl;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.net.URI;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.binding.LocalServiceBindingException;
 import org.teleal.cling.binding.annotations.AnnotationLocalServiceBinder;
 import org.teleal.cling.model.DefaultServiceManager;
@@ -51,13 +42,23 @@ import org.teleal.cling.model.types.UDADeviceType;
 import org.teleal.cling.model.types.UDAServiceType;
 import org.teleal.cling.model.types.UDN;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.net.URI;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import zpisync.android.handlers.ConfigHandler;
+import zpisync.android.handlers.RunHandler;
+import zpisync.android.handlers.SyncHandler;
+import zpisync.shared.services.SwitchPower;
+import zpisync.shared.services.ZpiSyncRestServiceImpl;
+import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.graphics.Color;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 /**
  * @author Christian Bauer
@@ -157,7 +158,15 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
 			log.log(Level.SEVERE, "Unable to stop REST service", e);
 		}
     }
-
+    public String getSynchronizationEndpoint(){
+        WifiManager myWifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+    WifiInfo myWifiInfo = myWifiManager.getConnectionInfo();
+    int ipAddress = myWifiInfo.getIpAddress();
+    String ip = android.text.format.Formatter.formatIpAddress(ipAddress);
+        String response = "http://"+ip+":";
+        response += this.restService.server.getEphemeralPort()+"/";
+        return response;
+}
     public void propertyChange(PropertyChangeEvent event) {
         if (event.getPropertyName().equals("status")) {
             log.info("Turning light: " + event.getNewValue());
