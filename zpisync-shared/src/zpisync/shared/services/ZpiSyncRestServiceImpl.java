@@ -2,6 +2,7 @@ package zpisync.shared.services;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.restlet.Component;
@@ -127,6 +128,27 @@ public class ZpiSyncRestServiceImpl {
 			fi.setSize(1234);
 			fi.setModificationTime(new Date());
 			return fi;
+		}
+	}
+	public static class SyncLastModDateService extends ServerResource {
+		@Get
+		public Date retrieve() {
+			return Services.getSyncService().getLastModificationDate();
+		}
+	}
+	public static class SyncGetFileInfo extends ServerResource {
+		@Get
+		public FileInfo retrieve() {
+			String path = this.getQuery().getValues("path");
+			return Services.getSyncService().getFileInfo(path);
+		}
+	}
+	public static class SyncModFilesService extends ServerResource {
+		@Get
+		public List<FileInfo> retrieve() {
+			String date = this.getQuery().getValues("modification_date");
+			Date mod = new Date(Long.parseLong(date));
+			return Services.getSyncService().getFileList(mod);
 		}
 	}
 }

@@ -28,6 +28,7 @@ import org.teleal.common.logging.LoggingUtil;
 import zpisync.android.services.AndroidSyncService;
 import zpisync.android.util.FixedAndroidHandler;
 import zpisync.shared.services.Services;
+import zpisync.shared.services.SyncService;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -80,6 +81,8 @@ public class MainActivity extends TabActivity {
 
         setContentView(R.layout.main);
 
+        Services.setSyncService(new AndroidSyncService());
+        
         TabHost tabHost = getTabHost();
         TabHost.TabSpec spec;
         Intent intent;
