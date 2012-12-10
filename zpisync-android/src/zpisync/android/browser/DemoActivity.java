@@ -32,7 +32,7 @@ import zpisync.android.browser.R;
 import zpisync.android.handlers.ConfigHandler;
 import zpisync.android.handlers.RunHandler;
 import zpisync.android.handlers.SyncHandler;
-import zpisync.shared.services.SwitchPower;
+import zpisync.shared.services.UpnpZpiSync;
 import zpisync.shared.services.ZpiSyncRestServiceImpl;
 
 import org.teleal.cling.binding.LocalServiceBindingException;
@@ -75,7 +75,7 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
         public void onServiceConnected(ComponentName className, IBinder service) {
             upnpService = (AndroidUpnpService) service;
 
-            LocalService<SwitchPower> switchPowerService = getSwitchPowerService();
+            LocalService<UpnpZpiSync> switchPowerService = getSwitchPowerService();
 
             // Register the device when this activity binds to the service for the first time
             if (switchPowerService == null) {
@@ -143,7 +143,7 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
         super.onDestroy();
 
         // Stop monitoring the power switch
-        LocalService<SwitchPower> switchPowerService = getSwitchPowerService();
+        LocalService<UpnpZpiSync> switchPowerService = getSwitchPowerService();
         if (switchPowerService != null)
             switchPowerService.getManager().getImplementation().getPropertyChangeSupport()
                     .removePropertyChangeListener(this);
@@ -197,7 +197,7 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
         });
     }
 
-    protected LocalService<SwitchPower> getSwitchPowerService() {
+    protected LocalService<UpnpZpiSync> getSwitchPowerService() {
         if (upnpService == null)
             return null;
 
@@ -205,28 +205,28 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
         if ((binaryLightDevice = upnpService.getRegistry().getLocalDevice(udn, true)) == null)
             return null;
 
-        return (LocalService<SwitchPower>)
-                binaryLightDevice.findService(new UDAServiceType("SwitchPower", 1));
+        return (LocalService<UpnpZpiSync>)
+                binaryLightDevice.findService(new UDAServiceType("ZpiSync", 1));
     }
 
     protected LocalDevice createDevice()
             throws ValidationException, LocalServiceBindingException {
 
         DeviceType type =
-                new UDADeviceType("BinaryLight", 1);
+                new UDADeviceType("ZpiSync", 1);
 
         DeviceDetails details =
                 new DeviceDetails(
                         ConfigHandler.getDeviceID(),
-                        new ManufacturerDetails("ACME"),
-                        new ModelDetails("AndroidLight", "A demo light with on/off switch.", "v1")
+                        new ManufacturerDetails("PWr"),
+                        new ModelDetails("ZpiSync", "File synchronization tool.", "v1")
                 );
 
-        LocalService<SwitchPower> service =
-                new AnnotationLocalServiceBinder().read(SwitchPower.class);
+        LocalService<UpnpZpiSync> service =
+                new AnnotationLocalServiceBinder().read(UpnpZpiSync.class);
 
         service.setManager(
-                new DefaultServiceManager<SwitchPower>(service, SwitchPower.class)
+                new DefaultServiceManager<UpnpZpiSync>(service, UpnpZpiSync.class)
         );
 
         return new LocalDevice(

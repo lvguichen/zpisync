@@ -42,7 +42,7 @@ import zpisync.desktop.views.PreferencesView;
 import zpisync.desktop.views.TrayView;
 import zpisync.shared.FileInfo;
 import zpisync.shared.Util;
-import zpisync.shared.services.SwitchPower;
+import zpisync.shared.services.UpnpZpiSync;
 
 public class App implements AppController {
 
@@ -304,7 +304,7 @@ public class App implements AppController {
 		// cling is supposedly thread-safe
 
 		private Service<?, ?> findService(Device<?, ?, ?> device, Class<?> serviceType) {
-			LocalService service = new AnnotationLocalServiceBinder().read(SwitchPower.class);
+			LocalService service = new AnnotationLocalServiceBinder().read(UpnpZpiSync.class);
 			return device.findService(service.getServiceType());
 		}
 
@@ -313,7 +313,7 @@ public class App implements AppController {
 			log.log(Level.INFO, "Device added: {0} {1} {2}", new Object[] { device.getDisplayString(),
 					device.getDetails().getFriendlyName(), device });
 
-			Service<?, ?> switchPower = findService(device, SwitchPower.class);
+			Service<?, ?> switchPower = findService(device, UpnpZpiSync.class);
 			if (switchPower == null)
 				return;
 
@@ -336,7 +336,7 @@ public class App implements AppController {
 
 		@Override
 		public void remoteDeviceUpdated(Registry registry, RemoteDevice device) {
-			Service<?, ?> switchPower = findService(device, SwitchPower.class);
+			Service<?, ?> switchPower = findService(device, UpnpZpiSync.class);
 			if (switchPower == null)
 				return;
 
@@ -357,7 +357,7 @@ public class App implements AppController {
 			log.log(Level.INFO, "Device removed: {0} {1} {2}", new Object[] { device.getDisplayString(),
 					device.getDetails().getFriendlyName(), device });
 
-			Service<?, ?> switchPower = findService(device, SwitchPower.class);
+			Service<?, ?> switchPower = findService(device, UpnpZpiSync.class);
 			if (switchPower == null)
 				return;
 

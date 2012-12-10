@@ -17,22 +17,22 @@
 
 package zpisync.shared.services;
 
-import org.teleal.cling.binding.annotations.*;
-import org.teleal.cling.model.types.UDAServiceType;
-
 import java.beans.PropertyChangeSupport;
 
-@UpnpService(serviceId = @UpnpServiceId(SwitchPower.ServiceId), serviceType = @UpnpServiceType(value = SwitchPower.ServiceType, version = SwitchPower.ServiceVersion))
-public class SwitchPower {
+import org.teleal.cling.binding.annotations.UpnpAction;
+import org.teleal.cling.binding.annotations.UpnpInputArgument;
+import org.teleal.cling.binding.annotations.UpnpOutputArgument;
+import org.teleal.cling.binding.annotations.UpnpService;
+import org.teleal.cling.binding.annotations.UpnpServiceId;
+import org.teleal.cling.binding.annotations.UpnpServiceType;
+import org.teleal.cling.binding.annotations.UpnpStateVariable;
 
-	public static final String ServiceId = "SwitchPower";
-	public static final String ServiceNS = UDAServiceType.DEFAULT_NAMESPACE;
-	public static final String ServiceType = "SwitchPower";
-	public static final int ServiceVersion = 1;
+@UpnpService(serviceId = @UpnpServiceId("ZpiSync"), serviceType = @UpnpServiceType(value = "ZpiSync", version = 1))
+public class UpnpZpiSync {
 
 	private final PropertyChangeSupport propertyChangeSupport;
 
-	public SwitchPower() {
+	public UpnpZpiSync() {
 		this.propertyChangeSupport = new PropertyChangeSupport(this);
 	}
 
@@ -45,6 +45,9 @@ public class SwitchPower {
 
 	@UpnpStateVariable(defaultValue = "0")
 	private boolean status = false;
+
+	@UpnpStateVariable(defaultValue = "")
+	private String endpointUrl = "http://example.com/";
 
 	@UpnpAction
 	public void setTarget(@UpnpInputArgument(name = "NewTargetValue") boolean newTargetValue) {
@@ -72,6 +75,11 @@ public class SwitchPower {
 	@UpnpAction(out = @UpnpOutputArgument(name = "ResultStatus"))
 	public boolean getStatus() {
 		return status;
+	}
+
+	@UpnpAction(out = @UpnpOutputArgument(name = "EndpointUrl"))
+	public String getEndpointUrl() {
+		return endpointUrl;
 	}
 
 }
