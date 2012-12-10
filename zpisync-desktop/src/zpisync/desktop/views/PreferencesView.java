@@ -108,8 +108,16 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 	protected void onBtnAssociateClicked(ActionEvent e) {
 		int row = tblDevices.getSelectedRow();
 		if (row >= 0) {
-			String udn = (String) tblDevices.getValueAt(row, 0);
+			String udn = (String) tblDevices.getValueAt(row, TblDevicesColumns.Udn);
 			app.associate(udn);
+		}
+	}
+
+	protected void onBtnSyncClicked(ActionEvent e) {
+		int row = tblDevices.getSelectedRow();
+		if (row >= 0) {
+			String udn = (String) tblDevices.getValueAt(row, TblDevicesColumns.Udn);
+			app.syncNow(udn);
 		}
 	}
 
@@ -259,14 +267,23 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 				onBtnAssociateClicked(e);
 			}
 		});
+		
+		JButton btnSync = new JButton("Sync");
+		btnSync.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onBtnSyncClicked(e);
+			}
+		});
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPane, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
-						.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
+						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
+						.addGroup(gl_panel_1.createSequentialGroup()
+							.addComponent(btnSync)
+							.addPreferredGap(ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
 							.addComponent(btnAssociate)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnDevicesRefresh)
@@ -286,7 +303,8 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnDevicesRefresh)
 						.addComponent(btnForget)
-						.addComponent(btnAssociate))
+						.addComponent(btnAssociate)
+						.addComponent(btnSync))
 					.addContainerGap())
 		);
 		gl_panel_1.linkSize(SwingConstants.VERTICAL, new Component[] {btnDevicesRefresh, btnForget});
@@ -296,26 +314,25 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 		scrollPane.setViewportView(tblDevices);
 		tblDevices.setModel(new DefaultTableModel(
 			new Object[][] {
-				{"0", "localhost", "now"},
-				{null, null, null},
+				{Boolean.TRUE, null, "0", "localhost", "now"},
+				{null, null, null, null, null},
 			},
 			new String[] {
-				"UDN", "Name", "Last sync"
+				"T", "S", "UDN", "Name", "Last sync"
 			}
 		) {
 			Class[] columnTypes = new Class[] {
-				String.class, String.class, String.class
+				Boolean.class, Boolean.class, String.class, String.class, String.class
 			};
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
-			boolean[] columnEditables = new boolean[] {
-				false, false, false
-			};
-			public boolean isCellEditable(int row, int column) {
-				return columnEditables[column];
-			}
 		});
+		tblDevices.getColumnModel().getColumn(0).setResizable(false);
+		tblDevices.getColumnModel().getColumn(0).setPreferredWidth(20);
+		tblDevices.getColumnModel().getColumn(0).setMaxWidth(20);
+		tblDevices.getColumnModel().getColumn(1).setPreferredWidth(20);
+		tblDevices.getColumnModel().getColumn(1).setMaxWidth(20);
 		panel_1.setLayout(gl_panel_1);
 
 		JPanel panel_2 = new JPanel();
@@ -371,6 +388,15 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 	}
 	// @formatter:on
 
+	interface TblDevicesColumns {
+		int Trusted = 0;
+		int Active = 1;
+		int DisplayName = 2;
+		int Udn = 3;
+		int LastModified = 4;
+		int ColumnCount = 5;
+	}
+
 	@Override
 	public void modelToView(PreferencesModel model) {
 		lblPin.setText(model.getPin());
@@ -379,7 +405,12 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 		DefaultTableModel tblDevicesModel = (DefaultTableModel) tblDevices.getModel();
 		tblDevicesModel.setRowCount(0);
 		for (DeviceInfoModel devInfo : model.getKnownDevices()) {
-			Object[] rowData = new Object[] { devInfo.getUdn(), devInfo.getDisplayName(), devInfo.getLastSyncTime() };
+			Object[] rowData = new Object[TblDevicesColumns.ColumnCount];
+			rowData[TblDevicesColumns.Trusted] = devInfo.isTrusted();
+			rowData[TblDevicesColumns.Active] = devInfo.isActive();
+			rowData[TblDevicesColumns.DisplayName] = devInfo.getDisplayName();
+			rowData[TblDevicesColumns.Udn] = devInfo.getUdn();
+			rowData[TblDevicesColumns.LastModified] = devInfo.getLastSyncTime();
 			tblDevicesModel.addRow(rowData);
 		}
 	}
@@ -411,9 +442,12 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 		for (Object rowObject : tblDevicesModel.getDataVector()) {
 			Vector<?> rowData = (Vector<?>) rowObject;
 			DeviceInfoModel devInfo = new DeviceInfoModel();
-			devInfo.setUdn((String) rowData.get(0));
-			devInfo.setDisplayName((String) rowData.get(1));
-			devInfo.setLastModified((Date) rowData.get(2));
+			devInfo.setTrusted((Boolean) rowData.get(TblDevicesColumns.Trusted));
+			devInfo.setActive((Boolean) rowData.get(TblDevicesColumns.Active));
+			devInfo.setDisplayName((String) rowData.get(TblDevicesColumns.DisplayName));
+			devInfo.setUdn((String) rowData.get(TblDevicesColumns.Udn));
+			devInfo.setLastModified((Date) rowData.get(TblDevicesColumns.LastModified));
+			model.getKnownDevices().add(devInfo);
 		}
 	}
 }

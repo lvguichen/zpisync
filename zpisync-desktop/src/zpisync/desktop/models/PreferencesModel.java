@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -121,11 +122,14 @@ public class PreferencesModel extends ModelBase {
 			devInfo.setUdn(knownDev.getAttribute("udn"));
 			devInfo.setTrusted(true);
 			try {
-				devInfo.setLastSyncTime(DateFormat.getInstance().parse(knownDev.getAttribute("last-sync")));
+				String lastSync = knownDev.getAttribute("last-sync");
+				if (!Util.isNullOrEmpty(lastSync))
+					devInfo.setLastSyncTime(DateFormat.getInstance().parse(lastSync));
 			} catch (ParseException e) {
 				devInfo.setLastSyncTime(null);
 				log.log(Level.SEVERE, "Parse error", e);
 			}
+			getKnownDevices().add(devInfo);
 		}
 	}
 
@@ -142,6 +146,17 @@ public class PreferencesModel extends ModelBase {
 				if (devInfo.getLastSyncTime() != null)
 					knownDev.setAttribute("last-sync", DateFormat.getInstance().format(devInfo.getLastSyncTime()));
 			}
+		}
+	}
+
+	public void clearDeviceState() {
+		Iterator<DeviceInfoModel> it = getKnownDevices().iterator();
+		while (it.hasNext()) {
+			DeviceInfoModel devInfo = it.next();
+			if (devInfo.isTrusted())
+				devInfo.setActive(false);
+			else
+				it.remove();
 		}
 	}
 }

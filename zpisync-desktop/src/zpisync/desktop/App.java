@@ -255,9 +255,23 @@ public class App implements AppController {
 		writePreferences();
 	}
 
+	private void syncNow(DeviceInfoModel devInfo) {
+		// TODO launch sync here
+	}
+
 	@Override
 	public void syncNow() {
-		// TODO Auto-generated method stub
+		for (DeviceInfoModel devInfo : prefsModel.getKnownDevices()) {
+			if (devInfo.isTrusted() && devInfo.isActive())
+				syncNow(devInfo);
+		}
+	}
+
+	@Override
+	public void syncNow(String udn) {
+		DeviceInfoModel devInfo = prefsModel.getKnownDevice(udn);
+		if (devInfo != null && devInfo.isTrusted() && devInfo.isActive())
+			syncNow(devInfo);
 	}
 
 	@Override
@@ -279,8 +293,9 @@ public class App implements AppController {
 
 	@Override
 	public void rescanDevices() {
-		prefsModel.getKnownDevices().clear();
+		prefsModel.clearDeviceState();
 		prefsView.modelToView(prefsModel);
+		upnpService.getRegistry().removeAllRemoteDevices();
 		upnpService.getControlPoint().search(1);
 	}
 
@@ -310,6 +325,7 @@ public class App implements AppController {
 				add = true;
 			}
 
+			devInfo.setActive(true);
 			devInfo.setDisplayName(device.getDetails().getFriendlyName());
 			devInfo.setUdn(udn);
 
@@ -329,6 +345,7 @@ public class App implements AppController {
 			if (devInfo == null)
 				return;
 
+			devInfo.setActive(true);
 			devInfo.setDisplayName(device.getDetails().getFriendlyName());
 			devInfo.setUdn(udn);
 
@@ -349,8 +366,12 @@ public class App implements AppController {
 			Iterator<DeviceInfoModel> it = prefsModel.getKnownDevices().iterator();
 			while (it.hasNext()) {
 				DeviceInfoModel devInfo = it.next();
-				if (devInfo.getUdn().equals(udn) && !devInfo.isTrusted())
-					it.remove();
+				if (devInfo.getUdn().equals(udn)) {
+					if (devInfo.isTrusted())
+						devInfo.setActive(false);
+					else
+						it.remove();
+				}
 			}
 			prefsView.modelToView(prefsModel);
 		};

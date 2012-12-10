@@ -7,6 +7,7 @@ import zpisync.desktop.ModelBase;
 public class DeviceInfoModel extends ModelBase {
 	String udn;
 	boolean trusted;
+	boolean active;
 	String displayName;
 	String syncUrl;
 	Date lastSyncTime;
@@ -18,6 +19,14 @@ public class DeviceInfoModel extends ModelBase {
 
 	public void setUdn(String udn) {
 		this.udn = udn;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public boolean isTrusted() {
@@ -62,6 +71,7 @@ public class DeviceInfoModel extends ModelBase {
 
 	@Override
 	public String toString() {
-		return "DeviceInfoModel [udn=" + udn + ", trusted=" + trusted + ", displayName=" + displayName + "]";
+		return "DeviceInfoModel [udn=" + udn + ", trusted=" + trusted + ", active=" + active + ", displayName="
+				+ displayName + "]";
 	}
 }

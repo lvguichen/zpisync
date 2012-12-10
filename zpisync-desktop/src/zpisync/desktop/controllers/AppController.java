@@ -17,6 +17,8 @@ public interface AppController {
 
 	void syncNow();
 
+	void syncNow(String udn);
+
 	AppController NULL = new AppController() {
 		public void displayMessage(String caption, String text, MessageType messageType) {
 		}
@@ -31,6 +33,10 @@ public interface AppController {
 
 		@Override
 		public void syncNow() {
+		}
+
+		@Override
+		public void syncNow(String udn) {
 		}
 
 		@Override
