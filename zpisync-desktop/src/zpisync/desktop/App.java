@@ -29,6 +29,7 @@ import org.teleal.cling.model.meta.Device;
 import org.teleal.cling.model.meta.LocalService;
 import org.teleal.cling.model.meta.RemoteDevice;
 import org.teleal.cling.model.meta.Service;
+import org.teleal.cling.model.types.UDN;
 import org.teleal.cling.registry.DefaultRegistryListener;
 import org.teleal.cling.registry.Registry;
 import org.teleal.cling.registry.RegistryListener;
@@ -265,6 +266,15 @@ public class App implements AppController {
 		stopFileScanner();
 		log.info("Application shutdown");
 		System.exit(0);
+	}
+
+	@Override
+	public void associate(String udn) {
+		Device device = upnpService.getRegistry().getDevice(new UDN(udn), false);
+		DeviceInfoModel knownDevice = prefsModel.getKnownDevice(udn);
+		knownDevice.setTrusted(true);
+		prefsView.modelToView(prefsModel);
+		writePreferences();
 	}
 
 	@Override

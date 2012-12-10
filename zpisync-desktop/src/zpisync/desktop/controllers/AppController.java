@@ -7,6 +7,8 @@ public interface AppController {
 
 	void exit();
 
+	void associate(String udn);
+
 	void rescanDevices();
 
 	void showPreferences();
@@ -37,6 +39,10 @@ public interface AppController {
 
 		@Override
 		public void rescanDevices() {
+		}
+
+		@Override
+		public void associate(String udn) {
 		}
 	};
 }

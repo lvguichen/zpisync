@@ -105,6 +105,14 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 		lblPin.setText(PreferencesModel.generatePin());
 	}
 
+	protected void onBtnAssociateClicked(ActionEvent e) {
+		int row = tblDevices.getSelectedRow();
+		if (row >= 0) {
+			String udn = (String) tblDevices.getValueAt(row, 0);
+			app.associate(udn);
+		}
+	}
+
 	protected void onBtnDevicesRefreshClicked(ActionEvent e) {
 		app.rescanDevices();
 	}
@@ -244,18 +252,26 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 		JButton btnForget = new JButton("Forget");
 		
 		JScrollPane scrollPane = new JScrollPane();
+		
+		JButton btnAssociate = new JButton("Associate");
+		btnAssociate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onBtnAssociateClicked(e);
+			}
+		});
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
-							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
-							.addGroup(gl_panel_1.createSequentialGroup()
-								.addComponent(btnDevicesRefresh)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(btnForget)))
+						.addComponent(scrollPane, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
+						.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
+							.addComponent(btnAssociate)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnDevicesRefresh)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnForget))
 						.addComponent(lblListOfKnown))
 					.addContainerGap())
 		);
@@ -269,11 +285,12 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnDevicesRefresh)
-						.addComponent(btnForget))
+						.addComponent(btnForget)
+						.addComponent(btnAssociate))
 					.addContainerGap())
 		);
 		gl_panel_1.linkSize(SwingConstants.VERTICAL, new Component[] {btnDevicesRefresh, btnForget});
-		gl_panel_1.linkSize(SwingConstants.HORIZONTAL, new Component[] {btnDevicesRefresh, btnForget});
+		gl_panel_1.linkSize(SwingConstants.HORIZONTAL, new Component[] {btnDevicesRefresh, btnForget, btnAssociate});
 		
 		tblDevices = new JTable();
 		scrollPane.setViewportView(tblDevices);
@@ -283,7 +300,7 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 				{null, null, null},
 			},
 			new String[] {
-				"UUID", "Name", "Last sync"
+				"UDN", "Name", "Last sync"
 			}
 		) {
 			Class[] columnTypes = new Class[] {
@@ -304,10 +321,8 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 		JPanel panel_2 = new JPanel();
 		panel_2.setBackground(SystemColor.window);
 		tabbedPane.addTab("Files", null, panel_2, null);
-		panel_2.setLayout(new BorderLayout(0, 0));
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
-		panel_2.add(scrollPane_1);
 		
 		tblFiles = new JTable();
 		tblFiles.setFillsViewportHeight(true);
@@ -337,6 +352,22 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 		tblFiles.getColumnModel().getColumn(0).setMinWidth(20);
 		tblFiles.getColumnModel().getColumn(0).setMaxWidth(20);
 		scrollPane_1.setViewportView(tblFiles);
+		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
+		gl_panel_2.setHorizontalGroup(
+			gl_panel_2.createParallelGroup(Alignment.LEADING)
+				.addGroup(Alignment.TRAILING, gl_panel_2.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
+					.addContainerGap())
+		);
+		gl_panel_2.setVerticalGroup(
+			gl_panel_2.createParallelGroup(Alignment.LEADING)
+				.addGroup(Alignment.TRAILING, gl_panel_2.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE)
+					.addContainerGap())
+		);
+		panel_2.setLayout(gl_panel_2);
 	}
 	// @formatter:on
 
