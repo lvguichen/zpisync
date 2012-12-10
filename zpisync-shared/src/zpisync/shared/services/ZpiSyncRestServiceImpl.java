@@ -1,6 +1,7 @@
 package zpisync.shared.services;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -18,6 +19,7 @@ import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.MapVerifier;
 
 import zpisync.shared.FileInfo;
+import zpisync.shared.FileInfoList;
 import zpisync.shared.Util;
 
 public class ZpiSyncRestServiceImpl {
@@ -134,28 +136,43 @@ public class ZpiSyncRestServiceImpl {
 			return fi;
 		}
 	}
-	public static class SyncLastModDateService extends ServerResource {
+	
+	public interface ISyncLastModDateService {
+		@Get
+		long retrieve();
+	}
+	public static class SyncLastModDateService extends ServerResource implements ISyncLastModDateService {
 		@Get
 		public long retrieve() {
 			return Services.getSyncService().getLastModificationDate().getTime();
 		}
 	}
-	public static class SyncGetFileInfo extends ServerResource {
+	
+	public interface ISyncGetFileInfo {
+		@Get
+		FileInfo retrieve();
+	}
+	public static class SyncGetFileInfo extends ServerResource implements ISyncGetFileInfo {
 		@Get
 		public FileInfo retrieve() {
 			String path = this.getQuery().getValues("path");
 			return Services.getSyncService().getFileInfo(path);
 		}
 	}
-	public static class SyncModFilesService extends ServerResource {
-		@Get
-		public List<FileInfo> retrieve() {
+	
+	public interface ISyncModFilesService {
+		@Get("json")
+		FileInfo[] retrieve();
+	}
+	public static class SyncModFilesService extends ServerResource implements ISyncModFilesService {
+		@Get("json")
+		public FileInfo[] retrieve() {
 			String date = this.getQuery().getValues("since");
 			long time = 0;
 			if (!Util.isNullOrEmpty(date))
 				time = Long.parseLong(date);
 			Date mod = new Date(time);
-			return Services.getSyncService().getFileList(mod);
+			return Services.getSyncService().getFileList(mod).toArray(new FileInfo[0]);
 		}
 	}
 }

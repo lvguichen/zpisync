@@ -2,8 +2,16 @@ package zpisync.desktop;
 
 import java.awt.EventQueue;
 import java.awt.TrayIcon.MessageType;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.Proxy;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +20,7 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,6 +31,7 @@ import java.util.logging.Logger;
 
 import javax.swing.UIManager;
 
+import org.restlet.resource.ClientResource;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
 import org.teleal.cling.binding.annotations.AnnotationLocalServiceBinder;
@@ -38,6 +48,8 @@ import org.teleal.cling.registry.DefaultRegistryListener;
 import org.teleal.cling.registry.Registry;
 import org.teleal.cling.registry.RegistryListener;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
+
 import zpisync.desktop.controllers.AppController;
 import zpisync.desktop.models.DeviceInfoModel;
 import zpisync.desktop.models.PreferencesModel;
@@ -47,6 +59,9 @@ import zpisync.desktop.views.TrayView;
 import zpisync.shared.FileInfo;
 import zpisync.shared.Util;
 import zpisync.shared.services.UpnpZpiSync;
+import zpisync.shared.services.ZpiSyncRestServiceImpl.ISyncLastModDateService;
+import zpisync.shared.services.ZpiSyncRestServiceImpl.ISyncModFilesService;
+import zpisync.shared.services.ZpiSyncRestServiceImpl.SyncLastModDateService;
 
 public class App implements AppController {
 
@@ -276,8 +291,60 @@ public class App implements AppController {
 			return;
 		}
 		String endpoint = (String) output.getValue();
-
 		log.info("Endpoint is: " + endpoint);
+
+		ISyncLastModDateService lastModSc = new ClientResource(endpoint + "sync/lastMod")
+				.wrap(ISyncLastModDateService.class);
+		ISyncModFilesService modFilesSc = new ClientResource(endpoint + "sync/fileList")
+				.wrap(ISyncModFilesService.class);
+
+		log.info("last mod: " + lastModSc.retrieve());
+
+		FileInfo[] modFiles = modFilesSc.retrieve();
+		// TODO date
+		log.info("mod files" + Arrays.toString(modFiles));
+
+		for (FileInfo fileInfo : modFiles) {
+			try {
+				downloadFile(endpoint, fileInfo);
+			} catch (Exception e) {
+				log.log(Level.SEVERE, "Download failed: " + fileInfo, e);
+			}
+		}
+	}
+
+	private void downloadFile(String endpoint, FileInfo fileInfo) throws IOException {
+		URL url = new URL(new URL(endpoint + "data/"), fileInfo.getPath());
+		File file = new File(prefsModel.getDataDir(), fileInfo.getPath());
+
+		log.info("Downloading: " + url + " to " + file);
+		downloadUrl2(url, file);
+	}
+
+	private void downloadUrl(URL url, File file) throws IOException, FileNotFoundException {
+		ReadableByteChannel rbc = Channels.newChannel(url.openConnection(Proxy.NO_PROXY).getInputStream());
+		FileOutputStream fos = new FileOutputStream(file);
+		fos.getChannel().transferFrom(rbc, 0, 1 << 24);
+	}
+
+	private void downloadUrl2(URL url, File file) throws IOException, FileNotFoundException {
+		BufferedInputStream in = null;
+		FileOutputStream fout = null;
+		try {
+			in = new BufferedInputStream(url.openStream());
+			fout = new FileOutputStream(file);
+
+			byte data[] = new byte[1024];
+			int count;
+			while ((count = in.read(data, 0, 1024)) != -1) {
+				fout.write(data, 0, count);
+			}
+		} finally {
+			if (in != null)
+				in.close();
+			if (fout != null)
+				fout.close();
+		}
 	}
 
 	@Override
