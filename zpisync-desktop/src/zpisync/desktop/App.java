@@ -25,6 +25,10 @@ import javax.swing.UIManager;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
 import org.teleal.cling.binding.annotations.AnnotationLocalServiceBinder;
+import org.teleal.cling.controlpoint.ActionCallback;
+import org.teleal.cling.model.action.ActionArgumentValue;
+import org.teleal.cling.model.action.ActionInvocation;
+import org.teleal.cling.model.meta.Action;
 import org.teleal.cling.model.meta.Device;
 import org.teleal.cling.model.meta.LocalService;
 import org.teleal.cling.model.meta.RemoteDevice;
@@ -256,7 +260,24 @@ public class App implements AppController {
 	}
 
 	private void syncNow(DeviceInfoModel devInfo) {
-		// TODO launch sync here
+		Device device = upnpService.getRegistry().getDevice(new UDN(devInfo.getUdn()), false);
+		if (device == null) {
+			log.severe("Sync device not found: " + devInfo);
+			return;
+		}
+
+		Service<?, ?> service = findService(device, UpnpZpiSync.class);
+		Action getEndpointUrlAction = service.getAction("GetEndpointUrl");
+		ActionInvocation getEndpointUrlInvocation = new ActionInvocation(getEndpointUrlAction);
+		new ActionCallback.Default(getEndpointUrlInvocation, upnpService.getControlPoint()).run();
+		ActionArgumentValue output = getEndpointUrlInvocation.getOutput("EndpointUrl");
+		if (output == null) {
+			log.severe("No endpoint output");
+			return;
+		}
+		String endpoint = (String) output.getValue();
+
+		log.info("Endpoint is: " + endpoint);
 	}
 
 	@Override
@@ -299,14 +320,14 @@ public class App implements AppController {
 		upnpService.getControlPoint().search(1);
 	}
 
+	private static Service<?, ?> findService(Device<?, ?, ?> device, Class<?> serviceType) {
+		LocalService service = new AnnotationLocalServiceBinder().read(UpnpZpiSync.class);
+		return device.findService(service.getServiceType());
+	}
+
 	private RegistryListener registryListener = new DefaultRegistryListener() {
 
 		// cling is supposedly thread-safe
-
-		private Service<?, ?> findService(Device<?, ?, ?> device, Class<?> serviceType) {
-			LocalService service = new AnnotationLocalServiceBinder().read(UpnpZpiSync.class);
-			return device.findService(service.getServiceType());
-		}
 
 		@Override
 		public void remoteDeviceAdded(Registry registry, RemoteDevice device) {
