@@ -60,7 +60,7 @@ public class UpnpControlPoint {
 
 		// Send a search message to all devices and services, they should
 		// respond soon
-		upnpService.getControlPoint().search(/* new STAllHeader() */);
+		upnpService.getControlPoint().search(10);
 
 		// Let's wait 10 seconds for them to respond
 		System.out.println("Waiting 10 seconds before shutting down...");
