@@ -150,8 +150,11 @@ public class ZpiSyncRestServiceImpl {
 	public static class SyncModFilesService extends ServerResource {
 		@Get
 		public List<FileInfo> retrieve() {
-			String date = this.getQuery().getValues("modification_date");
-			Date mod = new Date(Long.parseLong(date));
+			String date = this.getQuery().getValues("since");
+			long time = 0;
+			if (!Util.isNullOrEmpty(date))
+				time = Long.parseLong(date);
+			Date mod = new Date(time);
 			return Services.getSyncService().getFileList(mod);
 		}
 	}
