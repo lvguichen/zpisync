@@ -133,7 +133,7 @@ public class DemoActivity extends Activity implements PropertyChangeListener {
         //restService.setAuthSecret("PIN");
         try {
 			restService.start();
-			UpnpZpiSync.url=getSynchronizationEndpoint();
+			UpnpZpiSync.setUrl(getSynchronizationEndpoint());
 		} catch (Exception e) {
 			// TODO show error message
 			log.log(Level.SEVERE, "Unable to start REST service", e);

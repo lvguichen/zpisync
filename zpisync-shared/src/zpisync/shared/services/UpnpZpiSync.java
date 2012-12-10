@@ -29,7 +29,6 @@ import org.teleal.cling.binding.annotations.UpnpStateVariable;
 
 @UpnpService(serviceId = @UpnpServiceId("ZpiSync"), serviceType = @UpnpServiceType(value = "ZpiSync", version = 1))
 public class UpnpZpiSync {
-	public static String url =  "not yet known";
 	private final PropertyChangeSupport propertyChangeSupport;
 
 	public UpnpZpiSync() {
@@ -77,9 +76,17 @@ public class UpnpZpiSync {
 		return status;
 	}
 
+	// XXX
+	private static String url = null;
+
+	public static void setUrl(String synchronizationEndpoint) {
+		url = synchronizationEndpoint;
+	}
+
 	@UpnpAction(out = @UpnpOutputArgument(name = "EndpointUrl"))
 	public String getEndpointUrl() {
-		return endpointUrl;
+		//return endpointUrl;
+		return url;
 	}
 
 }
