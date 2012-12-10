@@ -25,7 +25,9 @@ import android.widget.TabHost;
 import zpisync.android.browser.R;
 import org.teleal.common.logging.LoggingUtil;
 
+import zpisync.android.services.AndroidSyncService;
 import zpisync.android.util.FixedAndroidHandler;
+import zpisync.shared.services.Services;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,6 +43,9 @@ public class MainActivity extends TabActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // initialize before use
+        Services.setSyncService(new AndroidSyncService());
+        
         // Fix the logging integration between java.util.logging and Android internal logging
         LoggingUtil.resetRootHandler(new FixedAndroidHandler());
 
