@@ -46,7 +46,7 @@ public class ZpiSyncRestServiceImpl {
 
 	File dataDir;
 	Component component;
-	Server server;
+	public Server server;
 
 	boolean enableAuthentication = false;
 	String authUser = "zpisync";
