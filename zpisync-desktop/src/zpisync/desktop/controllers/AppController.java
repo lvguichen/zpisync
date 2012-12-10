@@ -7,6 +7,8 @@ public interface AppController {
 
 	void exit();
 
+	void rescanDevices();
+
 	void showPreferences();
 
 	void saveState();
@@ -31,6 +33,10 @@ public interface AppController {
 
 		@Override
 		public void saveState() {
+		}
+
+		@Override
+		public void rescanDevices() {
 		}
 	};
 }

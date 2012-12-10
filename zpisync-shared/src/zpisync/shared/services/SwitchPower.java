@@ -18,11 +18,17 @@
 package zpisync.shared.services;
 
 import org.teleal.cling.binding.annotations.*;
+import org.teleal.cling.model.types.UDAServiceType;
 
 import java.beans.PropertyChangeSupport;
 
-@UpnpService(serviceId = @UpnpServiceId("SwitchPower"), serviceType = @UpnpServiceType(value = "SwitchPower", version = 1))
+@UpnpService(serviceId = @UpnpServiceId(SwitchPower.ServiceId), serviceType = @UpnpServiceType(value = SwitchPower.ServiceType, version = SwitchPower.ServiceVersion))
 public class SwitchPower {
+
+	public static final String ServiceId = "SwitchPower";
+	public static final String ServiceNS = UDAServiceType.DEFAULT_NAMESPACE;
+	public static final String ServiceType = "SwitchPower";
+	public static final int ServiceVersion = 1;
 
 	private final PropertyChangeSupport propertyChangeSupport;
 
@@ -41,8 +47,7 @@ public class SwitchPower {
 	private boolean status = false;
 
 	@UpnpAction
-	public void setTarget(
-			@UpnpInputArgument(name = "NewTargetValue") boolean newTargetValue) {
+	public void setTarget(@UpnpInputArgument(name = "NewTargetValue") boolean newTargetValue) {
 
 		boolean targetOldValue = target;
 		target = newTargetValue;
@@ -51,15 +56,12 @@ public class SwitchPower {
 
 		// These have no effect on the UPnP monitoring but it's JavaBean
 		// compliant
-		getPropertyChangeSupport().firePropertyChange("target", targetOldValue,
-				target);
-		getPropertyChangeSupport().firePropertyChange("status", statusOldValue,
-				status);
+		getPropertyChangeSupport().firePropertyChange("target", targetOldValue, target);
+		getPropertyChangeSupport().firePropertyChange("status", statusOldValue, status);
 
 		// This will send a UPnP event, it's the name of a state variable that
 		// sends events
-		getPropertyChangeSupport().firePropertyChange("Status", statusOldValue,
-				status);
+		getPropertyChangeSupport().firePropertyChange("Status", statusOldValue, status);
 	}
 
 	@UpnpAction(out = @UpnpOutputArgument(name = "RetTargetValue"))

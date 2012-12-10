@@ -45,7 +45,7 @@ public class PreferencesModel extends ModelBase {
 		}
 		return sb.toString();
 	}
-	
+
 	public String getPin() {
 		return pin;
 	}
@@ -64,6 +64,13 @@ public class PreferencesModel extends ModelBase {
 
 	public List<DeviceInfoModel> getKnownDevices() {
 		return knownDevices;
+	}
+
+	public DeviceInfoModel getKnownDevice(String udn) {
+		for (DeviceInfoModel devInfo : getKnownDevices())
+			if (devInfo.getUdn().equals(udn))
+				return devInfo;
+		return null;
 	}
 
 	public void load(File file) {

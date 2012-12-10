@@ -11,6 +11,8 @@ import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Date;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 import javax.swing.GroupLayout;
@@ -34,6 +36,7 @@ import zpisync.desktop.App;
 import zpisync.desktop.IView;
 import zpisync.desktop.Resources;
 import zpisync.desktop.controllers.AppController;
+import zpisync.desktop.models.DeviceInfoModel;
 import zpisync.desktop.models.PreferencesModel;
 
 @SuppressWarnings("serial")
@@ -97,6 +100,10 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 
 	protected void onBtnGenerateNewPinClicked(ActionEvent e) {
 		lblPin.setText(PreferencesModel.generatePin());
+	}
+
+	protected void onBtnDevicesRefreshClicked(ActionEvent e) {
+		app.rescanDevices();
 	}
 
 	/**
@@ -224,7 +231,12 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 		
 		JLabel lblListOfKnown = new JLabel("List of known devices:");
 		
-		JButton btnDeviceInfo = new JButton("Information");
+		JButton btnDevicesRefresh = new JButton("Refresh");
+		btnDevicesRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onBtnDevicesRefreshClicked(e);
+			}
+		});
 		
 		JButton btnForget = new JButton("Forget");
 		
@@ -238,7 +250,7 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 						.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
 							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
 							.addGroup(gl_panel_1.createSequentialGroup()
-								.addComponent(btnDeviceInfo)
+								.addComponent(btnDevicesRefresh)
 								.addPreferredGap(ComponentPlacement.RELATED)
 								.addComponent(btnForget)))
 						.addComponent(lblListOfKnown))
@@ -253,12 +265,12 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnDeviceInfo)
+						.addComponent(btnDevicesRefresh)
 						.addComponent(btnForget))
 					.addContainerGap())
 		);
-		gl_panel_1.linkSize(SwingConstants.VERTICAL, new Component[] {btnDeviceInfo, btnForget});
-		gl_panel_1.linkSize(SwingConstants.HORIZONTAL, new Component[] {btnDeviceInfo, btnForget});
+		gl_panel_1.linkSize(SwingConstants.VERTICAL, new Component[] {btnDevicesRefresh, btnForget});
+		gl_panel_1.linkSize(SwingConstants.HORIZONTAL, new Component[] {btnDevicesRefresh, btnForget});
 		
 		tblDevices = new JTable();
 		scrollPane.setViewportView(tblDevices);
@@ -322,11 +334,28 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 	public void modelToView(PreferencesModel model) {
 		lblPin.setText(model.getPin());
 		tfDataDir.setText(model.getDataDir().getAbsolutePath());
+
+		DefaultTableModel tblDevicesModel = (DefaultTableModel) tblDevices.getModel();
+		tblDevicesModel.setRowCount(0);
+		for (DeviceInfoModel devInfo : model.getKnownDevices()) {
+			Object[] rowData = new Object[] { devInfo.getUdn(), devInfo.getDisplayName(), devInfo.getLastSyncTime() };
+			tblDevicesModel.addRow(rowData);
+		}
 	}
 
 	@Override
 	public void viewToModel(PreferencesModel model) {
 		model.setPin(lblPin.getText());
 		model.setDataDir(new File(tfDataDir.getText()));
+
+		model.getKnownDevices().clear();
+		DefaultTableModel tblDevicesModel = (DefaultTableModel) tblDevices.getModel();
+		for (Object rowObject : tblDevicesModel.getDataVector()) {
+			Vector<?> rowData = (Vector<?>) rowObject;
+			DeviceInfoModel devInfo = new DeviceInfoModel();
+			devInfo.setUdn((String) rowData.get(0));
+			devInfo.setDisplayName((String) rowData.get(1));
+			devInfo.setLastModified((Date) rowData.get(2));
+		}
 	}
 }
