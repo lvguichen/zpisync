@@ -59,6 +59,10 @@ public class ZpiSyncRestServiceImpl {
 
 		component.getDefaultHost().attach("/sync/demo", SyncDemoService.class);
 		component.getDefaultHost().attach("/sync/info", SyncInfoService.class);
+		
+		component.getDefaultHost().attach("/sync/lastMod", SyncLastModDateService.class);
+		component.getDefaultHost().attach("/sync/fileInfo", SyncGetFileInfo.class);		
+		component.getDefaultHost().attach("/sync/fileList", SyncModFilesService.class);
 
 		// XXX completely insecure
 		// TODO add SSL
@@ -132,8 +136,8 @@ public class ZpiSyncRestServiceImpl {
 	}
 	public static class SyncLastModDateService extends ServerResource {
 		@Get
-		public Date retrieve() {
-			return Services.getSyncService().getLastModificationDate();
+		public long retrieve() {
+			return Services.getSyncService().getLastModificationDate().getTime();
 		}
 	}
 	public static class SyncGetFileInfo extends ServerResource {

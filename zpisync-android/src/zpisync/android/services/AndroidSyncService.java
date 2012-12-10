@@ -23,6 +23,8 @@ public class AndroidSyncService implements SyncService{
 	}
 	
 	public Date getLastModificationDate() {
+		if (fl.size() == 0)
+			return new Date(0);
 		Date last = fl.get(0).getModificationTime();
 		int i = 1;
 		while (i<fl.size()){
