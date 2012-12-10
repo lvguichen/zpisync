@@ -1,16 +1,28 @@
 package zpisync.shared;
 
+import java.io.File;
 import java.util.Date;
 
 public class FileInfo {
 	private String path;
 	private String name;
-	private Date changeTime;
 	private Date modificationTime;
 	private long size;
 
 	private boolean removed;
-
+	
+	public FileInfo(){
+		super();
+	}
+	
+	public FileInfo(File file, String zpisDIR){
+		path = file.getAbsolutePath();
+		path = path.substring(path.lastIndexOf(zpisDIR)+zpisDIR.length()+1);
+		name = file.getName();
+		modificationTime = new Date(file.lastModified());
+		size = file.length();
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -26,10 +38,6 @@ public class FileInfo {
 		} else if (!path.equals(other.path))
 			return false;
 		return true;
-	}
-
-	public Date getChangeTime() {
-		return changeTime;
 	}
 
 	public String getPath() {
@@ -58,10 +66,6 @@ public class FileInfo {
 
 	public boolean isRemoved() {
 		return removed;
-	}
-
-	public void setChangeTime(Date changeTime) {
-		this.changeTime = changeTime;
 	}
 
 	public void setPath(String path) {
