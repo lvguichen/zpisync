@@ -168,7 +168,7 @@ public class App implements AppController {
 		return files;
 	}
 
-	private FileInfo toFileInfo(FileInfo result, Path relativePath, BasicFileAttributes attrs) {
+	private static FileInfo toFileInfo(FileInfo result, Path relativePath, BasicFileAttributes attrs) {
 		result.setName(relativePath.getFileName().toString());
 		result.setDirectory(attrs.isDirectory());
 		result.setModificationTime(new Date(attrs.lastModifiedTime().toMillis()));
@@ -177,18 +177,18 @@ public class App implements AppController {
 		return result;
 	}
 
-	private FileInfo toFileInfo(Path relativePath, BasicFileAttributes attrs) {
+	private static FileInfo toFileInfo(Path relativePath, BasicFileAttributes attrs) {
 		return toFileInfo(new FileInfo(), relativePath, attrs);
 	}
 
-	private void addFile(Path relativePath, BasicFileAttributes attrs, boolean initial) {
+	private void onLocalAddFile(Path relativePath, BasicFileAttributes attrs, boolean initial) {
 		FileInfo fi = toFileInfo(relativePath, attrs);
 		files.add(fi);
 		fileMap.put(fi.getPath(), fi);
 		fireFilesChanged();
 	}
 
-	private void updateFile(Path relativePath, BasicFileAttributes attrs) {
+	private void onLocalUpdateFile(Path relativePath, BasicFileAttributes attrs) {
 		FileInfo fi = fileMap.get(relativePath.toString());
 		if (fi == null) {
 			log.severe("missing file info: " + relativePath);
@@ -197,7 +197,7 @@ public class App implements AppController {
 		fireFilesChanged();
 	}
 
-	private void removeFile(Path relativePath) {
+	private void onLocalRemoveFile(Path relativePath) {
 		String path = relativePath.toString();
 		FileInfo fi = fileMap.get(path);
 		files.remove(fi);
@@ -217,14 +217,14 @@ public class App implements AppController {
 			@Override
 			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
 				if (!dir.equals(prefsModel.getDataDir().toPath())) {
-					addFile(fileScanner.relativize(dir), attrs, true);
+					onLocalAddFile(fileScanner.relativize(dir), attrs, true);
 				}
 				return FileVisitResult.CONTINUE;
 			}
 
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-				addFile(fileScanner.relativize(file), attrs, true);
+				onLocalAddFile(fileScanner.relativize(file), attrs, true);
 				return FileVisitResult.CONTINUE;
 			}
 
@@ -432,12 +432,12 @@ public class App implements AppController {
 
 				if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
 					BasicFileAttributes attrs = Files.readAttributes(file, BasicFileAttributes.class);
-					addFile(relativePath, attrs, false);
+					onLocalAddFile(relativePath, attrs, false);
 				} else if (event.kind() == StandardWatchEventKinds.ENTRY_MODIFY) {
 					BasicFileAttributes attrs = Files.readAttributes(file, BasicFileAttributes.class);
-					updateFile(relativePath, attrs);
+					onLocalUpdateFile(relativePath, attrs);
 				} else if (event.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
-					removeFile(relativePath);
+					onLocalRemoveFile(relativePath);
 				} else {
 					throw new Error("Unhandler event kind: " + event.kind());
 				}
