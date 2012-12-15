@@ -28,10 +28,6 @@ import org.restlet.resource.ClientResource;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
 import org.teleal.cling.binding.annotations.AnnotationLocalServiceBinder;
-import org.teleal.cling.controlpoint.ActionCallback;
-import org.teleal.cling.model.action.ActionArgumentValue;
-import org.teleal.cling.model.action.ActionInvocation;
-import org.teleal.cling.model.meta.Action;
 import org.teleal.cling.model.meta.Device;
 import org.teleal.cling.model.meta.LocalService;
 import org.teleal.cling.model.meta.RemoteDevice;
@@ -274,16 +270,8 @@ public class App implements AppController {
 			return;
 		}
 
-		Service<?, ?> service = findService(device, UpnpZpiSync.class);
-		Action getEndpointUrlAction = service.getAction("GetEndpointUrl");
-		ActionInvocation getEndpointUrlInvocation = new ActionInvocation(getEndpointUrlAction);
-		new ActionCallback.Default(getEndpointUrlInvocation, upnpService.getControlPoint()).run();
-		ActionArgumentValue output = getEndpointUrlInvocation.getOutput("EndpointUrl");
-		if (output == null) {
-			log.severe("No endpoint output");
-			return;
-		}
-		String endpoint = (String) output.getValue();
+		UpnpZpiSyncClient upnpClient = new UpnpZpiSyncClient(upnpService, device);
+		String endpoint = upnpClient.getEndpointUrl();
 		log.info("Endpoint is: " + endpoint);
 
 		ISyncLastModDateService lastModSc = new ClientResource(endpoint + "sync/lastMod")
@@ -355,7 +343,7 @@ public class App implements AppController {
 	}
 
 	private static Service<?, ?> findService(Device<?, ?, ?> device, Class<?> serviceType) {
-		LocalService service = new AnnotationLocalServiceBinder().read(UpnpZpiSync.class);
+		LocalService service = new AnnotationLocalServiceBinder().read(serviceType);
 		return device.findService(service.getServiceType());
 	}
 
