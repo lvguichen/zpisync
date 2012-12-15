@@ -166,7 +166,6 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 		getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		
 		JPanel panel_3 = new JPanel();
-		panel_3.setBackground(SystemColor.window);
 		tabbedPane.addTab("Settings", null, panel_3, null);
 		
 		JLabel lblSecurityPin = new JLabel("Security PIN:");
@@ -245,7 +244,6 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 		panel_3.setLayout(gl_panel_3);
 
 		JPanel panel_1 = new JPanel();
-		panel_1.setBackground(SystemColor.window);
 		tabbedPane.addTab("Devices", null, panel_1, null);
 		
 		JLabel lblListOfKnown = new JLabel("List of known devices:");
@@ -279,11 +277,11 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
-						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
-						.addGroup(gl_panel_1.createSequentialGroup()
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPane, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
+						.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
 							.addComponent(btnSync)
-							.addPreferredGap(ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
 							.addComponent(btnAssociate)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnDevicesRefresh)
@@ -327,16 +325,22 @@ public class PreferencesView extends JFrame implements IView<PreferencesModel> {
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
+			boolean[] columnEditables = new boolean[] {
+				false, false, false, false, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
 		});
 		tblDevices.getColumnModel().getColumn(0).setResizable(false);
 		tblDevices.getColumnModel().getColumn(0).setPreferredWidth(20);
 		tblDevices.getColumnModel().getColumn(0).setMaxWidth(20);
+		tblDevices.getColumnModel().getColumn(1).setResizable(false);
 		tblDevices.getColumnModel().getColumn(1).setPreferredWidth(20);
 		tblDevices.getColumnModel().getColumn(1).setMaxWidth(20);
 		panel_1.setLayout(gl_panel_1);
 
 		JPanel panel_2 = new JPanel();
-		panel_2.setBackground(SystemColor.window);
 		tabbedPane.addTab("Files", null, panel_2, null);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();

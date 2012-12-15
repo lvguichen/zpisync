@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -48,8 +47,6 @@ import org.teleal.cling.registry.DefaultRegistryListener;
 import org.teleal.cling.registry.Registry;
 import org.teleal.cling.registry.RegistryListener;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
-
 import zpisync.desktop.controllers.AppController;
 import zpisync.desktop.models.DeviceInfoModel;
 import zpisync.desktop.models.PreferencesModel;
@@ -61,7 +58,6 @@ import zpisync.shared.Util;
 import zpisync.shared.services.UpnpZpiSync;
 import zpisync.shared.services.ZpiSyncRestServiceImpl.ISyncLastModDateService;
 import zpisync.shared.services.ZpiSyncRestServiceImpl.ISyncModFilesService;
-import zpisync.shared.services.ZpiSyncRestServiceImpl.SyncLastModDateService;
 
 public class App implements AppController {
 
@@ -106,7 +102,10 @@ public class App implements AppController {
 
 	public static void setupLookAndFeel() {
 		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			String osLaf = UIManager.getSystemLookAndFeelClassName();
+			if ("com.sun.java.swing.plaf.windows.WindowsLookAndFeel".equals(osLaf))
+				osLaf = "zpisync.desktop.BetterWindowsLookAndFeel";
+			UIManager.setLookAndFeel(osLaf);
 		} catch (Exception e) {
 			log.log(Level.WARNING, e.getMessage(), e);
 		}
