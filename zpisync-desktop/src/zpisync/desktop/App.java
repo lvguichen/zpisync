@@ -2,15 +2,9 @@ package zpisync.desktop;
 
 import java.awt.EventQueue;
 import java.awt.TrayIcon.MessageType;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.Proxy;
 import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -317,33 +311,7 @@ public class App implements AppController {
 		File file = new File(prefsModel.getDataDir(), fileInfo.getPath());
 
 		log.info("Downloading: " + url + " to " + file);
-		downloadUrl2(url, file);
-	}
-
-	private void downloadUrl(URL url, File file) throws IOException, FileNotFoundException {
-		ReadableByteChannel rbc = Channels.newChannel(url.openConnection(Proxy.NO_PROXY).getInputStream());
-		FileOutputStream fos = new FileOutputStream(file);
-		fos.getChannel().transferFrom(rbc, 0, 1 << 24);
-	}
-
-	private void downloadUrl2(URL url, File file) throws IOException, FileNotFoundException {
-		BufferedInputStream in = null;
-		FileOutputStream fout = null;
-		try {
-			in = new BufferedInputStream(url.openStream());
-			fout = new FileOutputStream(file);
-
-			byte data[] = new byte[1024];
-			int count;
-			while ((count = in.read(data, 0, 1024)) != -1) {
-				fout.write(data, 0, count);
-			}
-		} finally {
-			if (in != null)
-				in.close();
-			if (fout != null)
-				fout.close();
-		}
+		HttpUtil.downloadUrl(url, file);
 	}
 
 	@Override
