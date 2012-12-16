@@ -153,7 +153,7 @@ public class App implements AppController {
 	UpnpService upnpService;
 
 	private void startUpnp() {
-		upnpService = new UpnpServiceImpl(threadSafeRegistryListener);
+		upnpService = new UpnpServiceImpl(new ZpiSyncUpnpServiceConfiguration(), threadSafeRegistryListener);
 		upnpService.getRegistry().removeAllRemoteDevices();
 		upnpService.getControlPoint().search(1);
 	}
