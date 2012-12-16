@@ -24,6 +24,8 @@ import java.util.logging.Logger;
 
 import javax.swing.UIManager;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.resource.ClientResource;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
@@ -274,16 +276,19 @@ public class App implements AppController {
 		String endpoint = upnpClient.getEndpointUrl();
 		log.info("Endpoint is: " + endpoint);
 
-		ISyncLastModDateService lastModSc = new ClientResource(endpoint + "sync/lastMod")
-				.wrap(ISyncLastModDateService.class);
-		ISyncModFilesService modFilesSc = new ClientResource(endpoint + "sync/fileList")
-				.wrap(ISyncModFilesService.class);
+		ClientResource lastModCr = new ClientResource(endpoint + "sync/lastMod");
+		ISyncLastModDateService lastModSc = lastModCr.wrap(ISyncLastModDateService.class);
+		ClientResource modFilesCr = new ClientResource(endpoint + "sync/fileList");
+		ISyncModFilesService modFilesSc = modFilesCr.wrap(ISyncModFilesService.class);
 
 		log.info("last mod: " + lastModSc.retrieve());
 
 		FileInfo[] modFiles = modFilesSc.retrieve();
 		// TODO date
 		log.info("mod files" + Arrays.toString(modFiles));
+
+		lastModCr.release();
+		modFilesCr.release();
 
 		for (FileInfo fileInfo : modFiles) {
 			try {
