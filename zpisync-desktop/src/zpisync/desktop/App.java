@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 import java.awt.TrayIcon.MessageType;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -24,8 +25,6 @@ import java.util.logging.Logger;
 
 import javax.swing.UIManager;
 
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.resource.ClientResource;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
@@ -266,6 +265,8 @@ public class App implements AppController {
 	}
 
 	private void syncNow(DeviceInfoModel devInfo) {
+		log.info("Synchronizing with " + devInfo.getDisplayName());
+
 		Device device = upnpService.getRegistry().getDevice(new UDN(devInfo.getUdn()), false);
 		if (device == null) {
 			log.severe("Sync device not found: " + devInfo);
@@ -281,30 +282,43 @@ public class App implements AppController {
 		ClientResource modFilesCr = new ClientResource(endpoint + "sync/fileList");
 		ISyncModFilesService modFilesSc = modFilesCr.wrap(ISyncModFilesService.class);
 
-		log.info("last mod: " + lastModSc.retrieve());
+		log.info("Last modified: " + lastModSc.retrieve());
 
+		// TODO pass lastMod date as argument
 		FileInfo[] modFiles = modFilesSc.retrieve();
-		// TODO date
-		log.info("mod files" + Arrays.toString(modFiles));
+		log.info("Modified files: " + Arrays.toString(modFiles));
 
 		lastModCr.release();
 		modFilesCr.release();
 
 		for (FileInfo fileInfo : modFiles) {
 			try {
-				downloadFile(endpoint, fileInfo);
+				File file = new File(prefsModel.getDataDir(), fileInfo.getPath());
+				URL url = getDataUrl(endpoint, fileInfo);
+
+				if (fileInfo.isDirectory()) {
+					log.info("Creating directory: " + file);
+					file.mkdir();
+				} else if (fileInfo.isRemoved()) {
+					log.info("Removing: " + file);
+					file.delete();
+				} else {
+					log.info("Downloading: " + url + " to " + file);
+					HttpUtil.downloadUrl(url, file);
+				}
+
+				if (file.exists())
+					file.setLastModified(fileInfo.getModificationTime().getTime());
 			} catch (Exception e) {
 				log.log(Level.SEVERE, "Download failed: " + fileInfo, e);
 			}
 		}
+
+		log.info("Synchronization with " + devInfo.getDisplayName() + " completed!");
 	}
 
-	private void downloadFile(String endpoint, FileInfo fileInfo) throws IOException {
-		URL url = new URL(new URL(endpoint + "data/"), fileInfo.getPath());
-		File file = new File(prefsModel.getDataDir(), fileInfo.getPath());
-
-		log.info("Downloading: " + url + " to " + file);
-		HttpUtil.downloadUrl(url, file);
+	private URL getDataUrl(String endpoint, FileInfo fileInfo) throws MalformedURLException {
+		return new URL(new URL(endpoint + "data/"), fileInfo.getPath());
 	}
 
 	@Override
